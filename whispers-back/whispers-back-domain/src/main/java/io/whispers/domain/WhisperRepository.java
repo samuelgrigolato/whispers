@@ -6,4 +6,6 @@ public interface WhisperRepository {
 
     Collection<Whisper> findMostRecent(int limit);
 
+    Whisper create(CreateWhisperData data);
+
 }

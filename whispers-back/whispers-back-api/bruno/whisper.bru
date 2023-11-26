@@ -1,0 +1,21 @@
+meta {
+  name: whisper
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8080/whispers
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: samuel
+}
+
+body:json {
+  {
+    "text": "teste"
+  }
+}

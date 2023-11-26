@@ -1,5 +1,6 @@
 package io.whispers.api;
 
+import io.whispers.domain.CreateWhisperData;
 import io.whispers.domain.Reply;
 import io.whispers.domain.Whisper;
 import io.whispers.domain.WhisperRepository;
@@ -7,19 +8,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
@@ -74,6 +74,38 @@ class WhispersControllerTest {
                             ]
                         }
                     ]
+                """));
+    }
+
+    @Test
+    void shouldCreate() throws Exception {
+        var whisper = mock(Whisper.class);
+        when(whisper.getId()).thenReturn(UUID.fromString("51d0eaaa-0b61-44a9-9d63-cd672727b792"));
+        when(whisper.getSender()).thenReturn("sender");
+        when(whisper.getTopic()).thenReturn(Optional.empty());
+        when(whisper.getText()).thenReturn("text");
+        when(whisper.getTimestamp()).thenReturn(ZonedDateTime.of(2023, 1, 10, 15, 30, 0, 0, ZoneId.of("Etc/UTC")));
+        when(whisper.getReplies()).thenReturn(Collections.emptyList());
+        when(this.whisperRepository.create(new CreateWhisperData("text", "sender")))
+                .thenReturn(whisper);
+        this.mockMvc.perform(post("/whispers")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                                "text": "text"
+                            }
+                        """)
+                        .header("Authorization", "Bearer sender"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                    {
+                        "id": "51d0eaaa-0b61-44a9-9d63-cd672727b792",
+                        "sender": "sender",
+                        "timestamp": "2023-01-10T15:30:00Z",
+                        "text": "text",
+                        "topic": null,
+                        "replies": []
+                    }
                 """));
     }
 

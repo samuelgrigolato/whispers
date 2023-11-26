@@ -1,5 +1,6 @@
 package io.whispers.jpa;
 
+import io.whispers.domain.CreateWhisperData;
 import io.whispers.domain.Whisper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,7 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ContextConfiguration(classes = WhisperRepositoryJpaAdapter.class)
 class WhisperRepositoryJpaAdapterTest extends BaseJpaTest {
@@ -39,6 +40,19 @@ class WhisperRepositoryJpaAdapterTest extends BaseJpaTest {
         var obtainedReply = obtainedWhisper2.getReplies().iterator().next();
         assertEquals("user2", obtainedReply.getSender());
         assertEquals("replyText", obtainedReply.getText());
+    }
+
+    @Test
+    @Sql("WhisperRepositoryJpaAdapterTest_shouldCreate.sql")
+    void shouldCreate() {
+        var result = this.whisperRepositoryJpaAdapter.create(new CreateWhisperData(
+                "text",
+                "user"
+        ));
+        assertNotNull(result.getId());
+        assertEquals("text", result.getText());
+        assertEquals("user", result.getSender());
+        assertTrue(result.getTopic().isEmpty());
     }
 
 }

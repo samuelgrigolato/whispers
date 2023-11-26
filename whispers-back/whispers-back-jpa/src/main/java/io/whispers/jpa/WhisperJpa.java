@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "whispers")
-class WhisperJpa {
+public class WhisperJpa {
     @Id
     private UUID id;
 

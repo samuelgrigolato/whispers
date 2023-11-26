@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "replies")
-class ReplyJpa {
+public class ReplyJpa {
     @Id
     private UUID id;
 
