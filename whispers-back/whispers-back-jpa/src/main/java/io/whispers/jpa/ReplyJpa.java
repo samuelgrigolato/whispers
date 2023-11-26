@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "replies")
-public class ReplyJpa {
+class ReplyJpa {
     @Id
     private UUID id;
 
@@ -24,9 +24,9 @@ public class ReplyJpa {
     @ManyToOne
     private WhisperJpa whisper;
 
-    public ReplyJpa() {}
+    ReplyJpa() {}
 
-    public ReplyJpa(UUID id, String text, ZonedDateTime timestamp, UserJpa sender, WhisperJpa whisper) {
+    ReplyJpa(UUID id, String text, ZonedDateTime timestamp, UserJpa sender, WhisperJpa whisper) {
         this.id = id;
         this.text = text;
         this.timestamp = timestamp;
@@ -34,19 +34,19 @@ public class ReplyJpa {
         this.whisper = whisper;
     }
 
-    public UUID getId() {
+    UUID getId() {
         return id;
     }
 
-    public String getText() {
+    String getText() {
         return text;
     }
 
-    public ZonedDateTime getTimestamp() {
+    ZonedDateTime getTimestamp() {
         return timestamp;
     }
 
-    public UserJpa getSender() {
+    UserJpa getSender() {
         return sender;
     }
 }

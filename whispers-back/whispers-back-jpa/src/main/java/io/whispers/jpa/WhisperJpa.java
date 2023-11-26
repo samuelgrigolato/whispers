@@ -4,12 +4,11 @@ import jakarta.persistence.*;
 
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Entity
 @Table(name = "whispers")
-public class WhisperJpa {
+class WhisperJpa {
     @Id
     private UUID id;
 
@@ -26,9 +25,9 @@ public class WhisperJpa {
     @OneToMany(mappedBy = "whisper")
     private List<ReplyJpa> replies;
 
-    public WhisperJpa() {}
+    WhisperJpa() {}
 
-    public WhisperJpa(UUID id, UserJpa sender, String text, ZonedDateTime timestamp, TopicJpa topic, List<ReplyJpa> replies) {
+    WhisperJpa(UUID id, UserJpa sender, String text, ZonedDateTime timestamp, TopicJpa topic, List<ReplyJpa> replies) {
         this.id = id;
         this.sender = sender;
         this.text = text;
@@ -37,27 +36,27 @@ public class WhisperJpa {
         this.replies = replies;
     }
 
-    public UUID getId() {
+    UUID getId() {
         return id;
     }
 
-    public UserJpa getSender() {
+    UserJpa getSender() {
         return sender;
     }
 
-    public String getText() {
+    String getText() {
         return text;
     }
 
-    public ZonedDateTime getTimestamp() {
+    ZonedDateTime getTimestamp() {
         return timestamp;
     }
 
-    public TopicJpa getTopic() {
+    TopicJpa getTopic() {
         return topic;
     }
 
-    public List<ReplyJpa> getReplies() {
+    List<ReplyJpa> getReplies() {
         return replies;
     }
 }

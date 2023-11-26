@@ -8,16 +8,16 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "topics")
-public class TopicJpa {
+class TopicJpa {
     @Id
     private UUID id;
     private String topic;
 
-    public UUID getId() {
+    UUID getId() {
         return id;
     }
 
-    public String getTopic() {
+    String getTopic() {
         return topic;
     }
 }

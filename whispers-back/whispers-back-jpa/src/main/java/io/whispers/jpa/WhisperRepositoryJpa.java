@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface WhisperRepositoryJpa extends JpaRepository<WhisperJpa, UUID> {
+interface WhisperRepositoryJpa extends JpaRepository<WhisperJpa, UUID> {
     List<WhisperJpa> findByOrderByTimestampDesc(Limit limit);
 }

@@ -9,10 +9,10 @@ import java.util.Comparator;
 import java.util.Optional;
 import java.util.UUID;
 
-public class WhisperJpaAdapter implements Whisper {
+class WhisperJpaAdapter implements Whisper {
     private WhisperJpa whisperJpa;
 
-    public WhisperJpaAdapter(WhisperJpa whisperJpa) {
+    WhisperJpaAdapter(WhisperJpa whisperJpa) {
         this.whisperJpa = whisperJpa;
     }
 

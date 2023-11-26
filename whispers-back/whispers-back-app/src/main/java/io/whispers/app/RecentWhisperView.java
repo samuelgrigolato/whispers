@@ -15,7 +15,7 @@ public record RecentWhisperView(
         Optional<String> topic,
         Collection<RecentWhisperReplyView> replies
 ) {
-    public static RecentWhisperView from(Whisper whisper) {
+    static RecentWhisperView from(Whisper whisper) {
         return new RecentWhisperView(
                 whisper.getId(),
                 whisper.getSender(),

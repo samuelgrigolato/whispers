@@ -8,23 +8,23 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "users")
-public class UserJpa {
+class UserJpa {
     @Id
     private UUID id;
     private String username;
 
-    public UserJpa() {}
+    UserJpa() {}
 
-    public UserJpa(UUID id, String username) {
+    UserJpa(UUID id, String username) {
         this.id = id;
         this.username = username;
     }
 
-    public UUID getId() {
+    UUID getId() {
         return id;
     }
 
-    public String getUsername() {
+    String getUsername() {
         return username;
     }
 }

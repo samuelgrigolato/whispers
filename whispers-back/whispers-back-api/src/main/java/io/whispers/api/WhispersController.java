@@ -12,7 +12,7 @@ import java.util.Collection;
 
 @RestController
 @RequestMapping("/whispers")
-public class WhispersController {
+class WhispersController {
 
     @Autowired
     private WhisperRepository whisperRepository;

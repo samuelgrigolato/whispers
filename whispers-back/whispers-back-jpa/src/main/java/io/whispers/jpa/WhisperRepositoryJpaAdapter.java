@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Collection;
 
 @Repository
-public class WhisperRepositoryJpaAdapter implements WhisperRepository {
+class WhisperRepositoryJpaAdapter implements WhisperRepository {
 
     @Autowired
     private WhisperRepositoryJpa whisperRepositoryJpa;

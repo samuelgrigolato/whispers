@@ -4,10 +4,10 @@ import io.whispers.domain.Reply;
 
 import java.time.ZonedDateTime;
 
-public class ReplyJpaAdapter implements Reply {
+class ReplyJpaAdapter implements Reply {
     private ReplyJpa replyJpa;
 
-    public ReplyJpaAdapter(ReplyJpa replyJpa) {
+    ReplyJpaAdapter(ReplyJpa replyJpa) {
         this.replyJpa = replyJpa;
     }
 
