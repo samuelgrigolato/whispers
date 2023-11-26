@@ -1,7 +1,8 @@
 package io.whispers.api;
 
-import io.whispers.app.GetMostRecentWhispersUseCase;
-import io.whispers.app.RecentWhisperView;
+import io.whispers.app.getmostrecentwhispers.GetMostRecentWhispersUseCase;
+import io.whispers.app.getmostrecentwhispers.GetMostRecentWhispersResponse;
+import io.whispers.app.getmostrecentwhispers.RecentWhisperView;
 import io.whispers.domain.WhisperRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +21,8 @@ class WhispersController {
     @GetMapping
     Collection<RecentWhisperView> get() {
         GetMostRecentWhispersUseCase useCase = new GetMostRecentWhispersUseCase(this.whisperRepository);
-        return useCase.execute();
+        GetMostRecentWhispersResponse response = useCase.execute();
+        return response.whispers();
     }
 
 }

@@ -1,8 +1,6 @@
-package io.whispers.app;
+package io.whispers.app.getmostrecentwhispers;
 
 import io.whispers.domain.WhisperRepository;
-
-import java.util.Collection;
 
 public class GetMostRecentWhispersUseCase {
     private static final int LIMIT = 10;
@@ -13,10 +11,11 @@ public class GetMostRecentWhispersUseCase {
         this.whisperRepository = whisperRepository;
     }
 
-    public Collection<RecentWhisperView> execute() {
-        return this.whisperRepository.findMostRecent(LIMIT).stream()
+    public GetMostRecentWhispersResponse execute() {
+        var whispers = this.whisperRepository.findMostRecent(LIMIT).stream()
                 .map(RecentWhisperView::from)
                 .toList();
+        return new GetMostRecentWhispersResponse(whispers);
     }
 
 }

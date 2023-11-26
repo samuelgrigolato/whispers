@@ -1,6 +1,5 @@
-package io.whispers.app;
+package io.whispers.app.getmostrecentwhispers;
 
-import io.whispers.domain.Reply;
 import io.whispers.domain.Whisper;
 import io.whispers.domain.WhisperRepository;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,7 @@ class GetMostRecentWhispersUseCaseTest {
         when(whisper.getTimestamp()).thenReturn(ZonedDateTime.of(2023, 1, 10, 10, 30, 0, 0, ZoneId.systemDefault()));
         when(whisper.getText()).thenReturn("text");
         when(whisper.getTopic()).thenReturn(Optional.of("topic"));
-        var reply = mock(Reply.class);
+        var reply = mock(io.whispers.domain.Reply.class);
         when(reply.getSender()).thenReturn("replySender");
         when(reply.getText()).thenReturn("replyText");
         when(reply.getTimestamp()).thenReturn(ZonedDateTime.of(2023, 1, 10, 10, 31, 0, 0, ZoneId.systemDefault()));
@@ -37,7 +36,8 @@ class GetMostRecentWhispersUseCaseTest {
 
         var subject = new GetMostRecentWhispersUseCase(whisperRepositoryMock);
 
-        var result = subject.execute();
+        var response = subject.execute();
+        var result = response.whispers();
 
         verify(whisperRepositoryMock).findMostRecent(10);
 
@@ -50,7 +50,7 @@ class GetMostRecentWhispersUseCaseTest {
                 ZonedDateTime.of(2023, 1, 10, 10, 30, 0, 0, ZoneId.systemDefault()),
                 "text",
                 Optional.of("topic"),
-                List.of(new RecentWhisperReplyView(
+                List.of(new RecentReplyView(
                         "replySender",
                         ZonedDateTime.of(2023, 1, 10, 10, 31, 0, 0, ZoneId.systemDefault()),
                         "replyText"
