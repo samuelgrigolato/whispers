@@ -1,9 +1,6 @@
 package io.whispers.api;
 
-import io.whispers.domain.CreateWhisperData;
-import io.whispers.domain.Reply;
-import io.whispers.domain.Whisper;
-import io.whispers.domain.WhisperRepository;
+import io.whispers.domain.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -105,6 +102,38 @@ class WhispersControllerTest {
                         "text": "text",
                         "topic": null,
                         "replies": []
+                    }
+                """));
+    }
+
+    @Test
+    void shouldCreateReply() throws Exception {
+        var reply = mock(Reply.class);
+        when(reply.getSender()).thenReturn("sender");
+        when(reply.getTimestamp()).thenReturn(ZonedDateTime.of(2023, 1, 10, 10, 30, 0, 0, ZoneId.of("Etc/UTC")));
+        when(reply.getText()).thenReturn("text");
+        var createReplyData = new CreateReplyData(
+                "text",
+                "sender",
+                UUID.fromString("530bbffb-455b-42e7-9759-23e508e89f03")
+        );
+        when(this.whisperRepository.createReply(createReplyData))
+                .thenReturn(reply);
+        this.mockMvc.perform(post("/whispers")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                                "text": "text",
+                                "replyingTo": "530bbffb-455b-42e7-9759-23e508e89f03"
+                            }
+                        """)
+                        .header("Authorization", "Bearer sender"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                    {
+                        "sender": "sender",
+                        "timestamp": "2023-01-10T10:30:00Z",
+                        "text": "text"
                     }
                 """));
     }

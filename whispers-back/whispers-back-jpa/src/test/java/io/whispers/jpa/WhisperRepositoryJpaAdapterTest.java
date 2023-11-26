@@ -1,5 +1,6 @@
 package io.whispers.jpa;
 
+import io.whispers.domain.CreateReplyData;
 import io.whispers.domain.CreateWhisperData;
 import io.whispers.domain.Whisper;
 import org.junit.jupiter.api.Test;
@@ -53,6 +54,18 @@ class WhisperRepositoryJpaAdapterTest extends BaseJpaTest {
         assertEquals("text", result.getText());
         assertEquals("user", result.getSender());
         assertTrue(result.getTopic().isEmpty());
+    }
+
+    @Test
+    @Sql("WhisperRepositoryJpaAdapterTest_shouldCreateReply.sql")
+    void shouldCreateReply() {
+        var result = this.whisperRepositoryJpaAdapter.createReply(new CreateReplyData(
+                "text",
+                "user",
+                UUID.fromString("64050873-5b09-41f7-9d6d-41669917a3b9")
+        ));
+        assertEquals("text", result.getText());
+        assertEquals("user", result.getSender());
     }
 
 }

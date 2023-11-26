@@ -8,4 +8,6 @@ public interface WhisperRepository {
 
     Whisper create(CreateWhisperData data);
 
+    Reply createReply(CreateReplyData data);
+
 }

@@ -1,8 +1,6 @@
 package io.whispers.jpa;
 
-import io.whispers.domain.CreateWhisperData;
-import io.whispers.domain.Whisper;
-import io.whispers.domain.WhisperRepository;
+import io.whispers.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Repository;
@@ -20,6 +18,9 @@ class WhisperRepositoryJpaAdapter implements WhisperRepository {
 
     @Autowired
     private UserRepositoryJpa userRepositoryJpa;
+
+    @Autowired
+    private ReplyRepositoryJpa replyRepositoryJpa;
 
     @Override
     public Collection<Whisper> findMostRecent(int limit) {
@@ -45,5 +46,24 @@ class WhisperRepositoryJpaAdapter implements WhisperRepository {
         );
         this.whisperRepositoryJpa.save(whisper);
         return new WhisperJpaAdapter(whisper);
+    }
+
+    @Override
+    public Reply createReply(CreateReplyData data) {
+        var sender = this.userRepositoryJpa.findByUsername(data.sender());
+        if (sender == null) {
+            throw new IllegalArgumentException("sender not found");
+        }
+        var whisper = this.whisperRepositoryJpa.findById(data.replyingTo())
+                .orElseThrow();
+        var reply = new ReplyJpa(
+                UUID.randomUUID(),
+                data.text(),
+                ZonedDateTime.now(),
+                sender,
+                whisper
+        );
+        this.replyRepositoryJpa.save(reply);
+        return new ReplyJpaAdapter(reply);
     }
 }
