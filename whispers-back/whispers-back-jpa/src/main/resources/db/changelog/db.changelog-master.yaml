@@ -1,0 +1,99 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: samuel
+      changes:
+        - createTable:
+            tableName: topics
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: topic
+                  type: text
+                  constraints:
+                    unique: true
+  - changeSet:
+      id: 2
+      author: samuel
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: username
+                  type: text
+                  constraints:
+                    unique: true
+  - changeSet:
+      id: 3
+      author: samuel
+      changes:
+        - createTable:
+            tableName: whispers
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: sender_id
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk_whispers_sender
+                    referencedTableName: users
+                    referencedColumnNames: id
+              - column:
+                  name: text
+                  type: text
+              - column:
+                  name: timestamp
+                  type: timestamp with timezone
+              - column:
+                  name: topic_id
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk_whispers_topic
+                    referencedTableName: topics
+                    referencedColumnNames: id
+  - changeSet:
+      id: 4
+      author: samuel
+      changes:
+        - createTable:
+            tableName: replies
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: sender_id
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk_whispers_sender
+                    referencedTableName: users
+                    referencedColumnNames: id
+              - column:
+                  name: text
+                  type: text
+              - column:
+                  name: timestamp
+                  type: timestamp with timezone
+              - column:
+                  name: whisper_id
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk_replies_whisper
+                    referencedTableName: whispers
+                    referencedColumnNames: id

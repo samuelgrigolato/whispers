@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleHome" value="" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/whispers-back-api" />
+            <option value="$PROJECT_DIR$/whispers-back-api/whispers-back-jpa" />
+            <option value="$PROJECT_DIR$/whispers-back-app" />
+            <option value="$PROJECT_DIR$/whispers-back-domain" />
+            <option value="$PROJECT_DIR$/whispers-back-jpa" />
+            <option value="$PROJECT_DIR$/whispers-back-server1" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>

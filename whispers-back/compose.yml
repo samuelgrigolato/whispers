@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: "postgres:15"
+    environment:
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: whispers
+    ports:
+      - "5432:5432"
+  pgadmin:
+    image: "dpage/pgadmin4"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: me@samuel.dev
+      PGADMIN_DEFAULT_PASSWORD: 123456
+    ports:
+      - "10000:80"

@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  /* needed for the scrollfix below */
+  overflow-x: hidden;
+}
+
+/* gives some space for the scrollbar
+  to appear and not cause a layout shift */
+.scrollfix {
+  width: 100vw;
+  padding-right: 15px;
+}
+
+.custom-loader {
+  width:25px;
+  height:25px;
+  border-radius:50%;
+  border:4px solid;
+  border-color:rgb(88 28 135) #0000;
+  animation:s1 1s infinite;
+}
+@keyframes s1 {to{transform: rotate(.5turn)}}
