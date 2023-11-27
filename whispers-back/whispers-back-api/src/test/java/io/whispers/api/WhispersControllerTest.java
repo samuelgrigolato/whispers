@@ -29,6 +29,9 @@ class WhispersControllerTest {
     @MockBean
     private WhisperRepository whisperRepository;
 
+    @MockBean
+    private UserRepository userRepository;
+
     @Test
     void shouldReturnEmptyResponse() throws Exception {
         when(this.whisperRepository

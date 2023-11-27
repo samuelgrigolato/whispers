@@ -8,6 +8,7 @@ import io.whispers.app.postreply.PostReplyRequest;
 import io.whispers.app.postreply.PostReplyUseCase;
 import io.whispers.app.postwhisper.PostWhisperRequest;
 import io.whispers.app.postwhisper.PostWhisperUseCase;
+import io.whispers.domain.UserRepository;
 import io.whispers.domain.WhisperRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,9 @@ class WhispersController {
 
     @Autowired
     private WhisperRepository whisperRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping(path = "")
     Collection<RecentWhisperView> get(@RequestParam("topic") Optional<String> topic) {
@@ -47,13 +51,17 @@ class WhispersController {
     Object post(@RequestBody PostWhisperBody body, @RequestHeader("Authorization") String authorization) {
         String sender = authorization.substring("Bearer ".length());
         if (body.replyingTo().isEmpty()) {
-            PostWhisperUseCase useCase = new PostWhisperUseCase(this.whisperRepository);
+            PostWhisperUseCase useCase = new PostWhisperUseCase(
+                    this.whisperRepository,
+                    this.userRepository);
             return useCase.execute(new PostWhisperRequest(
                     sender,
                     body.text()
             ));
         } else {
-            PostReplyUseCase useCase = new PostReplyUseCase(this.whisperRepository);
+            PostReplyUseCase useCase = new PostReplyUseCase(
+                    this.whisperRepository,
+                    this.userRepository);
             return useCase.execute(new PostReplyRequest(
                     sender,
                     body.text(),
