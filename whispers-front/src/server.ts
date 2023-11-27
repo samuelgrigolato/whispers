@@ -70,15 +70,15 @@ export function startFakeApiServer() {
       this.get('/topics/trending', () => {
         return [
           {
-            title: 'good morning',
+            topic: 'good morning',
             whispers: 740000,
           },
           {
-            title: 'AI',
+            topic: 'AI',
             whispers: 600000,
           },
           {
-            title: 'pizza',
+            topic: 'pizza',
             whispers: 300,
           },
         ];

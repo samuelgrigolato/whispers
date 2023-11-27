@@ -3,7 +3,7 @@ import { AsyncOperationResult } from './async-operation';
 
 export async function apiGet<T>(url: string): Promise<AsyncData<T>> {
   try {
-    const resp = await fetch(`/api${url}`, {
+    const resp = await fetch(`${import.meta.env.VITE_API_BASE || '/api'}${url}`, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('username')}`,
       }
@@ -24,7 +24,7 @@ export async function apiGet<T>(url: string): Promise<AsyncData<T>> {
 
 export async function apiPost<T>(url: string, payload: any): Promise<AsyncOperationResult<T>> {
   try {
-    const resp = await fetch(`/api${url}`, {
+    const resp = await fetch(`${import.meta.env.VITE_API_BASE || '/api'}${url}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -32,7 +32,7 @@ export async function apiPost<T>(url: string, payload: any): Promise<AsyncOperat
       },
       body: JSON.stringify(payload),
     });
-    if (resp.status === 201) {
+    if (resp.status === 200 || resp.status === 201) {
       const data = await resp.json();
       return { status: 'success', data };
     } else {

@@ -8,7 +8,7 @@
   const router = useRouter();
 
   interface Topic {
-    title: string;
+    topic: string;
     whispers: number;
   }
 
@@ -43,10 +43,10 @@
           py-4 px-6 hover:shadow-lg
           flex justify-between items-center
         "
-        @click="router.push(`/topics/${topic.title}`)"
+        @click="router.push(`/topics/${topic.topic}`)"
       >
         <span class="text-xl">
-          {{ index + 1 }}. {{ topic.title }}
+          {{ index + 1 }}. {{ topic.topic }}
         </span>
         <span class="text-sm">
           {{ whispersDescription(topic.whispers) }}

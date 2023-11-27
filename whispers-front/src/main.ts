@@ -12,7 +12,9 @@ import Feed from './components/Feed.vue';
 import Topic from './components/Topic.vue';
 import { startFakeApiServer } from './server';
 
-startFakeApiServer();
+if (!import.meta.env.VITE_API_BASE) {
+  startFakeApiServer();
+}
 
 const routes = [
     { path: '/login', component: Login },

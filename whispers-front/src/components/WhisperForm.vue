@@ -14,6 +14,7 @@
 
   async function whisper() {
     if (asyncWhisper.value.status !== 'idle') return;
+    if (text.value.trim() === '') return;
     asyncWhisper.value = { status: 'executing' };
     const result = await apiPost<Whisper>('/whispers', {
       text: text.value,
