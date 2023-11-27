@@ -20,4 +20,8 @@ public class TopicJpa {
     String getTopic() {
         return topic;
     }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
 }

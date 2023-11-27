@@ -2,12 +2,16 @@ package io.whispers.jpa;
 
 import io.whispers.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Limit;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -23,8 +27,20 @@ class WhisperRepositoryJpaAdapter implements WhisperRepository {
     private ReplyRepositoryJpa replyRepositoryJpa;
 
     @Override
-    public Collection<Whisper> findMostRecent(int limit) {
-        return this.whisperRepositoryJpa.findByOrderByTimestampDesc(Limit.of(limit))
+    public Collection<Whisper> findMostRecent(Optional<String> sender, Optional<String> topic, int limit) {
+        var whisperJpa = new WhisperJpa();
+        sender.ifPresent(x -> {
+            var userJpa = new UserJpa();
+            userJpa.setUsername(x);
+            whisperJpa.setSender(userJpa);
+        });
+        topic.ifPresent(x -> {
+            var topicJpa = new TopicJpa();
+            topicJpa.setTopic(x);
+            whisperJpa.setTopic(topicJpa);
+        });
+        Pageable pageable = PageRequest.ofSize(limit).withSort(Sort.by("timestamp").descending());
+        return this.whisperRepositoryJpa.findAll(Example.of(whisperJpa), pageable)
                 .stream()
                 .map(x -> (Whisper) new WhisperJpaAdapter(x))
                 .toList();

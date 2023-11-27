@@ -11,8 +11,9 @@ public class GetMostRecentWhispersUseCase {
         this.whisperRepository = whisperRepository;
     }
 
-    public GetMostRecentWhispersResponse execute() {
-        var whispers = this.whisperRepository.findMostRecent(LIMIT).stream()
+    public GetMostRecentWhispersResponse execute(GetMostRecentWhispersRequest request) {
+        var whispers = this.whisperRepository
+                .findMostRecent(request.sender(), request.topic(), LIMIT).stream()
                 .map(RecentWhisperView::from)
                 .toList();
         return new GetMostRecentWhispersResponse(whispers);

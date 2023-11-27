@@ -1,5 +1,6 @@
 package io.whispers.api;
 
+import io.whispers.app.getmostrecentwhispers.GetMostRecentWhispersRequest;
 import io.whispers.app.getmostrecentwhispers.GetMostRecentWhispersUseCase;
 import io.whispers.app.getmostrecentwhispers.GetMostRecentWhispersResponse;
 import io.whispers.app.getmostrecentwhispers.RecentWhisperView;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/whispers")
@@ -20,10 +22,24 @@ class WhispersController {
     @Autowired
     private WhisperRepository whisperRepository;
 
-    @GetMapping
-    Collection<RecentWhisperView> get() {
+    @GetMapping(path = "")
+    Collection<RecentWhisperView> get(@RequestParam("topic") Optional<String> topic) {
         GetMostRecentWhispersUseCase useCase = new GetMostRecentWhispersUseCase(this.whisperRepository);
-        GetMostRecentWhispersResponse response = useCase.execute();
+        GetMostRecentWhispersResponse response = useCase.execute(new GetMostRecentWhispersRequest(
+                topic,
+                Optional.empty()
+        ));
+        return response.whispers();
+    }
+
+    @GetMapping(path = "/mine")
+    Collection<RecentWhisperView> getMine(@RequestHeader("Authorization") String authorization) {
+        String sender = authorization.substring("Bearer ".length());
+        GetMostRecentWhispersUseCase useCase = new GetMostRecentWhispersUseCase(this.whisperRepository);
+        GetMostRecentWhispersResponse response = useCase.execute(new GetMostRecentWhispersRequest(
+                Optional.empty(),
+                Optional.of(sender)
+        ));
         return response.whispers();
     }
 

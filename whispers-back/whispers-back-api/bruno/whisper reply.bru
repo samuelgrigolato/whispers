@@ -1,7 +1,7 @@
 meta {
-  name: whisper
+  name: whisper reply
   type: http
-  seq: 4
+  seq: 5
 }
 
 post {
@@ -11,11 +11,12 @@ post {
 }
 
 auth:bearer {
-  token: mari
+  token: samuel
 }
 
 body:json {
   {
-    "text": "teste"
+    "text": "teste",
+    "replyingTo": "61548e2e-4034-48e0-b213-00ad9f7c9357"
   }
 }

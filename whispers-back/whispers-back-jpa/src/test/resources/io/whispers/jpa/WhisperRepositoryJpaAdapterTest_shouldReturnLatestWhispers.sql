@@ -27,3 +27,9 @@ values ('fd8ab3d4-201c-4941-aa08-0fa3b8b7976e',
     '27ff79e8-810a-4c73-af52-730555630dda',
     'text3',
     '2000-01-01T10:29:00Z');
+
+insert into whispers (id, sender_id, text, timestamp)
+values ('a70d21e6-a6c1-4b45-bf71-18aa15c06ee9',
+    '00cb846c-331f-48e9-a214-786e6a53bb68',
+    'text4',
+    '2000-01-01T10:28:00Z');

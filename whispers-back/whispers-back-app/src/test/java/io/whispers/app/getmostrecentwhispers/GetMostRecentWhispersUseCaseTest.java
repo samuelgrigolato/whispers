@@ -31,15 +31,15 @@ class GetMostRecentWhispersUseCaseTest {
         var whispers = List.of(whisper);
 
         var whisperRepositoryMock = mock(WhisperRepository.class);
-        when(whisperRepositoryMock.findMostRecent(10))
+        when(whisperRepositoryMock.findMostRecent(Optional.of("sender"), Optional.of("topic"), 10))
                 .thenReturn(whispers);
 
         var subject = new GetMostRecentWhispersUseCase(whisperRepositoryMock);
 
-        var response = subject.execute();
+        var response = subject.execute(new GetMostRecentWhispersRequest(
+                Optional.of("topic"), Optional.of("sender")
+        ));
         var result = response.whispers();
-
-        verify(whisperRepositoryMock).findMostRecent(10);
 
         assertEquals(1, result.size());
         var whisperResult = result.iterator().next();

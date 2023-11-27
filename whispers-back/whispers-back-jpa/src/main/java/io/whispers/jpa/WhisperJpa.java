@@ -44,6 +44,10 @@ public class WhisperJpa {
         return sender;
     }
 
+    public void setSender(UserJpa sender) {
+        this.sender = sender;
+    }
+
     String getText() {
         return text;
     }
@@ -54,6 +58,10 @@ public class WhisperJpa {
 
     TopicJpa getTopic() {
         return topic;
+    }
+
+    public void setTopic(TopicJpa topic) {
+        this.topic = topic;
     }
 
     List<ReplyJpa> getReplies() {

@@ -1,0 +1,15 @@
+meta {
+  name: whispers by topic
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:8080/whispers?topic=AI
+  body: none
+  auth: none
+}
+
+query {
+  topic: AI
+}
