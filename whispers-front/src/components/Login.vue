@@ -5,8 +5,9 @@
   let username: string = '';
 
   function signIn() {
-    if (username !== '') {
-      localStorage.setItem('username', username);
+    const sanitizedUsername = username.trim();
+    if (sanitizedUsername !== '') {
+      localStorage.setItem('username', sanitizedUsername);
       router.push({ path: '/' });
     }
   }
