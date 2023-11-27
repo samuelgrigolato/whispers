@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @Configuration
 @EnableJpaRepositories
 @EntityScan
-class SpringConfiguration {
+class WhispersJpaConfiguration {
 }
