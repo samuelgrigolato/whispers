@@ -1,9 +1,6 @@
 package io.whispers.api;
 
-import io.whispers.app.getmostrecentwhispers.GetMostRecentWhispersRequest;
-import io.whispers.app.getmostrecentwhispers.GetMostRecentWhispersUseCase;
-import io.whispers.app.getmostrecentwhispers.GetMostRecentWhispersResponse;
-import io.whispers.app.getmostrecentwhispers.RecentWhisperView;
+import io.whispers.app.getmostrecentwhispers.*;
 import io.whispers.app.postreply.PostReplyRequest;
 import io.whispers.app.postreply.PostReplyUseCase;
 import io.whispers.app.postwhisper.PostWhisperRequest;
@@ -30,8 +27,7 @@ class WhispersController {
     Collection<RecentWhisperView> get(@RequestParam("topic") Optional<String> topic) {
         GetMostRecentWhispersUseCase useCase = new GetMostRecentWhispersUseCase(this.whisperRepository);
         GetMostRecentWhispersResponse response = useCase.execute(new GetMostRecentWhispersRequest(
-                topic,
-                Optional.empty()
+                topic.map(MostRecentFilterByTopic::new)
         ));
         return response.whispers();
     }
@@ -41,8 +37,7 @@ class WhispersController {
         String sender = authorization.substring("Bearer ".length());
         GetMostRecentWhispersUseCase useCase = new GetMostRecentWhispersUseCase(this.whisperRepository);
         GetMostRecentWhispersResponse response = useCase.execute(new GetMostRecentWhispersRequest(
-                Optional.empty(),
-                Optional.of(sender)
+                Optional.of(new MostRecentFilterBySender(sender))
         ));
         return response.whispers();
     }

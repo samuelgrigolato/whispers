@@ -13,8 +13,10 @@
             <option value="$PROJECT_DIR$/whispers-back-api/whispers-back-jpa" />
             <option value="$PROJECT_DIR$/whispers-back-app" />
             <option value="$PROJECT_DIR$/whispers-back-domain" />
+            <option value="$PROJECT_DIR$/whispers-back-dynamo" />
             <option value="$PROJECT_DIR$/whispers-back-jpa" />
             <option value="$PROJECT_DIR$/whispers-back-server1" />
+            <option value="$PROJECT_DIR$/whispers-back-server2" />
           </set>
         </option>
       </GradleProjectSettings>

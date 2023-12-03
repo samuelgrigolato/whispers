@@ -6,3 +6,5 @@ include("whispers-back-api:whispers-back-jpa")
 findProject(":whispers-back-api:whispers-back-jpa")?.name = "whispers-back-jpa"
 include("whispers-back-jpa")
 include("whispers-back-server1")
+include("whispers-back-dynamo")
+include("whispers-back-server2")

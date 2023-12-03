@@ -23,7 +23,7 @@ class WhisperRepositoryJpaAdapterTest extends BaseJpaTest {
     @Test
     @Sql("WhisperRepositoryJpaAdapterTest_shouldReturnLatestWhispers.sql")
     void shouldReturnLatestWhispers() {
-        var result = this.whisperRepositoryJpaAdapter.findMostRecent(Optional.empty(), Optional.empty(), 2);
+        var result = this.whisperRepositoryJpaAdapter.findMostRecent(2);
         assertEquals(2, result.size());
 
         Iterator<Whisper> iterator = result.iterator();
@@ -46,7 +46,7 @@ class WhisperRepositoryJpaAdapterTest extends BaseJpaTest {
     @Test
     @Sql("WhisperRepositoryJpaAdapterTest_shouldReturnLatestWhispers.sql")
     void shouldReturnLatestWhispersFilteringBySender() {
-        var result = this.whisperRepositoryJpaAdapter.findMostRecent(Optional.of("user2"), Optional.empty(), 2);
+        var result = this.whisperRepositoryJpaAdapter.findMostRecentBySender("user2", 2);
         assertEquals(1, result.size());
         Iterator<Whisper> iterator = result.iterator();
         var obtainedWhisper = iterator.next();
@@ -56,7 +56,7 @@ class WhisperRepositoryJpaAdapterTest extends BaseJpaTest {
     @Test
     @Sql("WhisperRepositoryJpaAdapterTest_shouldReturnLatestWhispers.sql")
     void shouldReturnLatestWhispersFilteringByTopic() {
-        var result = this.whisperRepositoryJpaAdapter.findMostRecent(Optional.empty(), Optional.of("topic1"), 2);
+        var result = this.whisperRepositoryJpaAdapter.findMostRecentByTopic("topic1", 2);
         assertEquals(1, result.size());
         Iterator<Whisper> iterator = result.iterator();
         var obtainedWhisper = iterator.next();

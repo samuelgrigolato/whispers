@@ -5,18 +5,18 @@ meta {
 }
 
 post {
-  url: http://localhost:8080/whispers
+  url: {{whispers_back_host}}/whispers
   body: json
   auth: bearer
 }
 
 auth:bearer {
-  token: samuel
+  token: john
 }
 
 body:json {
   {
-    "text": "teste",
-    "replyingTo": "61548e2e-4034-48e0-b213-00ad9f7c9357"
+    "text": "teste reply",
+    "replyingTo": "d52d6292-a539-4c83-886f-46be12589ea3"
   }
 }

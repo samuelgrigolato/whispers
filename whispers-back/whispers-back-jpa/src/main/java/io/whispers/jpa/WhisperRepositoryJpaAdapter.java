@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -27,18 +26,33 @@ class WhisperRepositoryJpaAdapter implements WhisperRepository {
     private ReplyRepositoryJpa replyRepositoryJpa;
 
     @Override
-    public Collection<Whisper> findMostRecent(Optional<String> sender, Optional<String> topic, int limit) {
+    public Collection<Whisper> findMostRecent(int limit) {
+        Pageable pageable = PageRequest.ofSize(limit).withSort(Sort.by("timestamp").descending());
+        return this.whisperRepositoryJpa.findAll(pageable)
+                .stream()
+                .map(x -> (Whisper) new WhisperJpaAdapter(x))
+                .toList();
+    }
+
+    @Override
+    public Collection<Whisper> findMostRecentBySender(String sender, int limit) {
         var whisperJpa = new WhisperJpa();
-        sender.ifPresent(x -> {
-            var userJpa = new UserJpa();
-            userJpa.setUsername(x);
-            whisperJpa.setSender(userJpa);
-        });
-        topic.ifPresent(x -> {
-            var topicJpa = new TopicJpa();
-            topicJpa.setTopic(x);
-            whisperJpa.setTopic(topicJpa);
-        });
+        var userJpa = new UserJpa();
+        userJpa.setUsername(sender);
+        whisperJpa.setSender(userJpa);
+        Pageable pageable = PageRequest.ofSize(limit).withSort(Sort.by("timestamp").descending());
+        return this.whisperRepositoryJpa.findAll(Example.of(whisperJpa), pageable)
+                .stream()
+                .map(x -> (Whisper) new WhisperJpaAdapter(x))
+                .toList();
+    }
+
+    @Override
+    public Collection<Whisper> findMostRecentByTopic(String topic, int limit) {
+        var whisperJpa = new WhisperJpa();
+        var topicJpa = new TopicJpa();
+        topicJpa.setTopic(topic);
+        whisperJpa.setTopic(topicJpa);
         Pageable pageable = PageRequest.ofSize(limit).withSort(Sort.by("timestamp").descending());
         return this.whisperRepositoryJpa.findAll(Example.of(whisperJpa), pageable)
                 .stream()

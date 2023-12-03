@@ -35,7 +35,7 @@ class WhispersControllerTest {
     @Test
     void shouldReturnEmptyResponse() throws Exception {
         when(this.whisperRepository
-                .findMostRecent(Optional.empty(), Optional.empty(), 10))
+                .findMostRecent(10))
                 .thenReturn(Collections.emptyList());
         this.mockMvc.perform(get("/whispers"))
                 .andExpect(status().isOk())
@@ -48,7 +48,7 @@ class WhispersControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json("[]"));
         verify(this.whisperRepository)
-                .findMostRecent(Optional.empty(), Optional.of("AI"), 10);
+                .findMostRecentByTopic("AI", 10);
     }
 
     @Test
@@ -64,7 +64,7 @@ class WhispersControllerTest {
         when(reply.getTimestamp()).thenReturn(ZonedDateTime.of(2023, 1, 10, 15, 31, 0, 0, ZoneId.of("Etc/UTC")));
         when(reply.getText()).thenReturn("replyText");
         when(whisper.getReplies()).thenReturn(List.of(reply));
-        when(this.whisperRepository.findMostRecent(Optional.empty(), Optional.empty(), 10)).thenReturn(List.of(whisper));
+        when(this.whisperRepository.findMostRecent(10)).thenReturn(List.of(whisper));
         this.mockMvc.perform(get("/whispers"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("""
@@ -96,7 +96,7 @@ class WhispersControllerTest {
         when(whisper.getText()).thenReturn("text");
         when(whisper.getTimestamp()).thenReturn(ZonedDateTime.of(2023, 1, 10, 15, 30, 0, 0, ZoneId.of("Etc/UTC")));
         when(whisper.getReplies()).thenReturn(Collections.emptyList());
-        when(this.whisperRepository.findMostRecent(Optional.of("sender"), Optional.empty(), 10)).thenReturn(List.of(whisper));
+        when(this.whisperRepository.findMostRecentBySender("sender", 10)).thenReturn(List.of(whisper));
         this.mockMvc.perform(get("/whispers/mine")
                         .header("Authorization", "Bearer sender"))
                 .andExpect(status().isOk())

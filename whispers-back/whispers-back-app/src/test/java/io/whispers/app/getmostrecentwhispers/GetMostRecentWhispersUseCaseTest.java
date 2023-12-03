@@ -16,7 +16,7 @@ import static org.mockito.Mockito.*;
 class GetMostRecentWhispersUseCaseTest {
 
     @Test
-    void testExecute() {
+     void testExecuteNotFiltering() {
         var whisper = mock(Whisper.class);
         when(whisper.getId()).thenReturn(UUID.fromString("4fa16e90-04f7-47cc-8dec-26d36a95fbf4"));
         when(whisper.getSender()).thenReturn("sender");
@@ -31,14 +31,12 @@ class GetMostRecentWhispersUseCaseTest {
         var whispers = List.of(whisper);
 
         var whisperRepositoryMock = mock(WhisperRepository.class);
-        when(whisperRepositoryMock.findMostRecent(Optional.of("sender"), Optional.of("topic"), 10))
+        when(whisperRepositoryMock.findMostRecent(10))
                 .thenReturn(whispers);
 
         var subject = new GetMostRecentWhispersUseCase(whisperRepositoryMock);
 
-        var response = subject.execute(new GetMostRecentWhispersRequest(
-                Optional.of("topic"), Optional.of("sender")
-        ));
+        var response = subject.execute(new GetMostRecentWhispersRequest(Optional.empty()));
         var result = response.whispers();
 
         assertEquals(1, result.size());
@@ -57,6 +55,30 @@ class GetMostRecentWhispersUseCaseTest {
                 ))
         );
         assertEquals(expectedWhisperResult, whisperResult);
+    }
+
+    @Test
+    void testExecuteFilteringBySender() {
+        var whisperRepositoryMock = mock(WhisperRepository.class);
+
+        var subject = new GetMostRecentWhispersUseCase(whisperRepositoryMock);
+        subject.execute(new GetMostRecentWhispersRequest(Optional.of(
+                new MostRecentFilterBySender("sender")
+        )));
+
+        verify(whisperRepositoryMock).findMostRecentBySender("sender", 10);
+    }
+
+    @Test
+    void testExecuteFilteringByTopic() {
+        var whisperRepositoryMock = mock(WhisperRepository.class);
+
+        var subject = new GetMostRecentWhispersUseCase(whisperRepositoryMock);
+        subject.execute(new GetMostRecentWhispersRequest(Optional.of(
+                new MostRecentFilterByTopic("topic")
+        )));
+
+        verify(whisperRepositoryMock).findMostRecentByTopic("topic", 10);
     }
 
 }

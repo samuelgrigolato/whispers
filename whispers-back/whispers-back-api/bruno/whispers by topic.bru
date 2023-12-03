@@ -5,11 +5,11 @@ meta {
 }
 
 get {
-  url: http://localhost:8080/whispers?topic=AI
+  url: {{whispers_back_host}}/whispers?topic=music
   body: none
   auth: none
 }
 
 query {
-  topic: AI
+  topic: music
 }

@@ -5,17 +5,17 @@ meta {
 }
 
 post {
-  url: http://localhost:8080/whispers
+  url: {{whispers_back_host}}/whispers
   body: json
   auth: bearer
 }
 
 auth:bearer {
-  token: mari
+  token: samuel
 }
 
 body:json {
   {
-    "text": "teste"
+    "text": "teste sfef sef "
   }
 }
