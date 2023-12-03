@@ -5,8 +5,6 @@ import com.amazonaws.services.dynamodbv2.document.ItemUtils;
 import io.whispers.domain.UserRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Map;
-
 @Repository
 public class DynamoUserRepository extends BaseDynamoRepository implements UserRepository {
 

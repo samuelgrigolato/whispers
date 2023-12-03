@@ -19,7 +19,6 @@ import java.util.UUID;
 
 import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @ContextConfiguration(classes = DynamoWhisperRepository.class)

@@ -1,8 +1,5 @@
 package io.whispers.app.postreply;
 
-import io.whispers.app.postwhisper.PostWhisperRequest;
-import io.whispers.app.postwhisper.PostWhisperResponse;
-import io.whispers.app.postwhisper.PostWhisperUseCase;
 import io.whispers.domain.*;
 import org.junit.jupiter.api.Test;
 

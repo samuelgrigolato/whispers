@@ -15,9 +15,7 @@ public class WhisperAdapter implements Whisper {
 
     public WhisperAdapter(Item item, ObjectMapper objectMapper) {
         this.item = item;
-
-        List<Reply> replies = parseReplies(item, objectMapper);
-        this.replies = replies;
+        this.replies = parseReplies(item, objectMapper);
     }
 
     @Override
