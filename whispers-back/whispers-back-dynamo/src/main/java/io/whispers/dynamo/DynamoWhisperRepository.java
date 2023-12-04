@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 import static java.time.format.DateTimeFormatter.ISO_INSTANT;
@@ -53,17 +54,40 @@ public class DynamoWhisperRepository extends BaseDynamoRepository implements Whi
 
     @Override
     public Collection<Whisper> findMostRecent(int limit) {
-        var result = dynamoDB.query(new QueryRequest()
-                .withTableName(getTableName())
-                .withIndexName("gsi1")
-                .withKeyConditionExpression("gsi1Pk = :global")
-                .withExpressionAttributeValues(Map.of(
-                        ":global", new AttributeValue("global")))
-                .withProjectionExpression("pk, sk")
-                .withScanIndexForward(false)
-                .withLimit(limit));
 
-        return batchGetWhispers(result);
+        var executorService = Executors.newCachedThreadPool();
+        var tasks = new ArrayList<Callable<QueryResult>>();
+        for (var i = 0; i < 10; i++) {
+            var thisI = i;
+            tasks.add(() -> dynamoDB.query(new QueryRequest()
+                    .withTableName(getTableName())
+                    .withIndexName("gsi1")
+                    .withKeyConditionExpression("gsi1Pk = :global")
+                    .withExpressionAttributeValues(Map.of(
+                            ":global", new AttributeValue("global" + thisI)))
+                    .withProjectionExpression("pk, sk")
+                    .withScanIndexForward(false)
+                    .withLimit(limit)));
+        }
+        try {
+            var futures = executorService.invokeAll(tasks);
+            executorService.close();
+            var allItems = futures.stream()
+                    .flatMap(future -> {
+                        try {
+                            return future.get().getItems().stream();
+                        } catch (InterruptedException | ExecutionException e) {
+                            throw new RuntimeException(e);
+                        }
+                    })
+                    .sorted(Comparator.comparing(item -> item.get("sk").getS(), Comparator.reverseOrder()))
+                    .collect(Collectors.toList());
+            return batchGetWhispers(new QueryResult()
+                    .withItems(allItems.subList(0, Math.min(allItems.size(), 10))));
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private List<Whisper> batchGetWhispers(QueryResult result) {
@@ -98,7 +122,7 @@ public class DynamoWhisperRepository extends BaseDynamoRepository implements Whi
             var item = new Item()
                     .withString("pk", "whisper#" + whisperUuid)
                     .withString("sk", "entry")
-                    .withString("gsi1Pk", "global")
+                    .withString("gsi1Pk", "global" + (whisperUuid.hashCode() % 10))
                     .withString("gsi1Sk", suffixedFormattedTimestamp)
                     .withString("gsi2Sk", suffixedFormattedTimestamp)
                     .withString("gsi3Pk", data.sender())

@@ -144,7 +144,7 @@ public class DynamoWhisperRepositoryTest extends BaseDynamoTest {
             Item item = new Item()
                     .withString("pk", "whisper#" + uuid)
                     .withString("sk", "entry")
-                    .withString("gsi1Pk", "global")
+                    .withString("gsi1Pk", "global0")
                     .withString("gsi1Sk", suffixedFormattedTimestamp)
                     .withString("gsi2Sk", suffixedFormattedTimestamp)
                     .withString("gsi3Pk", sender)
