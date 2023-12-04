@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -e
+
+AWS_PAGER= aws lambda invoke \
+    --function-name "whispers-python-lambdas-whisper-generator-dynamo" \
+    --invocation-type "Event" \
+    --cli-binary-format raw-in-base64-out \
+    --no-paginate \
+    response.out
