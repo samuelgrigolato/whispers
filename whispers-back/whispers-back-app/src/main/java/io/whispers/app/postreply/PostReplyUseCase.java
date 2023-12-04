@@ -16,7 +16,7 @@ public class PostReplyUseCase {
 
     public PostReplyResponse execute(PostReplyRequest request) {
         this.userRepository.createIfNotExists(request.sender());
-        Reply reply = this.whisperRepository.createReply(new CreateReplyData(
+        Reply reply = this.whisperRepository.createReply(new ReplyRequest(
                 request.text(),
                 request.sender(),
                 request.replyingTo()

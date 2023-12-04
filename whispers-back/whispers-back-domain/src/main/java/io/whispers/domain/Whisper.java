@@ -5,11 +5,12 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface Whisper {
-    UUID getId();
-    String getSender();
-    ZonedDateTime getTimestamp();
-    String getText();
-    Optional<String> getTopic();
-    Collection<Reply> getReplies();
+public record Whisper (
+        UUID id,
+        String sender,
+        ZonedDateTime timestamp,
+        String text,
+        Optional<String> topic,
+        Collection<Reply> replies
+) {
 }

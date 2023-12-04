@@ -2,7 +2,7 @@ package io.whispers.app.postwhisper;
 
 import io.whispers.domain.UserRepository;
 import io.whispers.domain.Whisper;
-import io.whispers.domain.CreateWhisperData;
+import io.whispers.domain.WhisperCreationRequest;
 import io.whispers.domain.WhisperRepository;
 
 public class PostWhisperUseCase {
@@ -19,7 +19,7 @@ public class PostWhisperUseCase {
 
     public PostWhisperResponse execute(PostWhisperRequest request) {
         this.userRepository.createIfNotExists(request.sender());
-        Whisper whisper = this.whisperRepository.create(new CreateWhisperData(
+        Whisper whisper = this.whisperRepository.create(new WhisperCreationRequest(
                 request.text(),
                 request.sender()
         ));

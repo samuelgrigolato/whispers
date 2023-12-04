@@ -4,8 +4,9 @@ import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.ItemUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.whispers.domain.CreateReplyData;
-import io.whispers.domain.CreateWhisperData;
+import io.whispers.domain.Reply;
+import io.whispers.domain.ReplyRequest;
+import io.whispers.domain.WhisperCreationRequest;
 import io.whispers.domain.Whisper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,18 +41,18 @@ public class DynamoWhisperRepositoryTest extends BaseDynamoTest {
         Iterator<Whisper> iterator = result.iterator();
 
         var obtainedWhisper1 = iterator.next();
-        assertEquals(UUID.fromString("47bd22fb-8b52-4c06-9c6d-ad8d5080ed7b"), obtainedWhisper1.getId());
+        assertEquals(UUID.fromString("47bd22fb-8b52-4c06-9c6d-ad8d5080ed7b"), obtainedWhisper1.id());
 
         var obtainedWhisper2 = iterator.next();
-        assertEquals(UUID.fromString("d1e99baf-6fde-44e2-88a7-a4a7d94ae3ef"), obtainedWhisper2.getId());
-        assertEquals("user", obtainedWhisper2.getSender());
-        assertEquals("text1", obtainedWhisper2.getText());
-        assertEquals(Optional.of("topic1"), obtainedWhisper2.getTopic());
-        assertEquals(1, obtainedWhisper2.getReplies().size());
+        assertEquals(UUID.fromString("d1e99baf-6fde-44e2-88a7-a4a7d94ae3ef"), obtainedWhisper2.id());
+        assertEquals("user", obtainedWhisper2.sender());
+        assertEquals("text1", obtainedWhisper2.text());
+        assertEquals(Optional.of("topic1"), obtainedWhisper2.topic());
+        assertEquals(1, obtainedWhisper2.replies().size());
 
-        var obtainedReply = obtainedWhisper2.getReplies().iterator().next();
-        assertEquals("user2", obtainedReply.getSender());
-        assertEquals("replyText", obtainedReply.getText());
+        var obtainedReply = obtainedWhisper2.replies().iterator().next();
+        assertEquals("user2", obtainedReply.sender());
+        assertEquals("replyText", obtainedReply.text());
     }
 
     @Test
@@ -61,7 +62,7 @@ public class DynamoWhisperRepositoryTest extends BaseDynamoTest {
         assertEquals(1, result.size());
         Iterator<Whisper> iterator = result.iterator();
         var obtainedWhisper = iterator.next();
-        assertEquals(UUID.fromString("a70d21e6-a6c1-4b45-bf71-18aa15c06ee9"), obtainedWhisper.getId());
+        assertEquals(UUID.fromString("a70d21e6-a6c1-4b45-bf71-18aa15c06ee9"), obtainedWhisper.id());
     }
 
     @Test
@@ -71,19 +72,19 @@ public class DynamoWhisperRepositoryTest extends BaseDynamoTest {
         assertEquals(1, result.size());
         Iterator<Whisper> iterator = result.iterator();
         var obtainedWhisper = iterator.next();
-        assertEquals(UUID.fromString("d1e99baf-6fde-44e2-88a7-a4a7d94ae3ef"), obtainedWhisper.getId());
+        assertEquals(UUID.fromString("d1e99baf-6fde-44e2-88a7-a4a7d94ae3ef"), obtainedWhisper.id());
     }
 
     @Test
     void shouldCreate() {
-        var result = this.dynamoWhisperRepository.create(new CreateWhisperData(
+        var result = this.dynamoWhisperRepository.create(new WhisperCreationRequest(
                 "text",
                 "user"
         ));
-        assertNotNull(result.getId());
-        assertEquals("text", result.getText());
-        assertEquals("user", result.getSender());
-        assertTrue(result.getTopic().isEmpty());
+        assertNotNull(result.id());
+        assertEquals("text", result.text());
+        assertEquals("user", result.sender());
+        assertTrue(result.topic().isEmpty());
     }
 
     @Test
@@ -94,13 +95,13 @@ public class DynamoWhisperRepositoryTest extends BaseDynamoTest {
                 ZonedDateTime.parse("2000-01-01T10:32:00Z"),
                 List.of()
         );
-        var result = this.dynamoWhisperRepository.createReply(new CreateReplyData(
+        var result = this.dynamoWhisperRepository.createReply(new ReplyRequest(
                 "text",
                 "user",
                 UUID.fromString("64050873-5b09-41f7-9d6d-41669917a3b9")
         ));
-        assertEquals("text", result.getText());
-        assertEquals("user", result.getSender());
+        assertEquals("text", result.text());
+        assertEquals("user", result.sender());
     }
 
     private void insertLatestWhispersFixtures() {
@@ -108,7 +109,7 @@ public class DynamoWhisperRepositoryTest extends BaseDynamoTest {
                 UUID.fromString("d1e99baf-6fde-44e2-88a7-a4a7d94ae3ef"),
                 "user", "text1", "topic1",
                 ZonedDateTime.parse("2000-01-01T10:30:00Z"),
-                List.of(new ReplyAdapter(
+                List.of(new Reply(
                         "user2",
                         ZonedDateTime.parse("2000-01-01T10:31:00Z"),
                         "replyText"
@@ -136,7 +137,7 @@ public class DynamoWhisperRepositoryTest extends BaseDynamoTest {
 
     private void insertWhisper(UUID uuid, String sender, String text,
                                String topic, ZonedDateTime timestamp,
-                               List<ReplyAdapter> replies) {
+                               List<Reply> replies) {
         try {
             var formattedTimestamp = timestamp.format(ISO_INSTANT);
             var suffixedFormattedTimestamp = formattedTimestamp + "#" + uuid;

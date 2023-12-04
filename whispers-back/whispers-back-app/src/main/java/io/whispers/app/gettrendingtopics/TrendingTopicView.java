@@ -8,8 +8,8 @@ public record TrendingTopicView(
 ) {
     public static TrendingTopicView from(TrendingTopic trendingTopic) {
         return new TrendingTopicView(
-                trendingTopic.getTopic(),
-                trendingTopic.getWhispers()
+                trendingTopic.topic(),
+                trendingTopic.whispers()
         );
     }
 }

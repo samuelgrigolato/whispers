@@ -18,15 +18,15 @@ public record PostWhisperResponse(
         Collection<RecentReplyView> replies
 ) {
     static PostWhisperResponse from(Whisper whisper) {
-        if (!whisper.getReplies().isEmpty()) {
-            throw new IllegalArgumentException("whisper.getReplies() should be empty!");
+        if (!whisper.replies().isEmpty()) {
+            throw new IllegalArgumentException("whisper.replies() should be empty!");
         }
         return new PostWhisperResponse(
-                whisper.getId(),
-                whisper.getSender(),
-                whisper.getTimestamp(),
-                whisper.getText(),
-                whisper.getTopic(),
+                whisper.id(),
+                whisper.sender(),
+                whisper.timestamp(),
+                whisper.text(),
+                whisper.topic(),
                 Collections.emptyList()
         );
     }

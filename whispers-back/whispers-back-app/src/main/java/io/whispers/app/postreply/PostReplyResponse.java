@@ -11,9 +11,9 @@ public record PostReplyResponse(
 ) {
     static PostReplyResponse from(Reply reply) {
         return new PostReplyResponse(
-                reply.getSender(),
-                reply.getTimestamp(),
-                reply.getText()
+                reply.sender(),
+                reply.timestamp(),
+                reply.text()
         );
     }
 }

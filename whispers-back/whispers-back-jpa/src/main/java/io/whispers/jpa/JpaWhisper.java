@@ -1,33 +1,35 @@
 package io.whispers.jpa;
 
+import io.whispers.domain.Whisper;
 import jakarta.persistence.*;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Entity
 @Table(name = "whispers")
-public class WhisperJpa {
+public class JpaWhisper {
     @Id
     private UUID id;
 
     @ManyToOne
-    private UserJpa sender;
+    private JpaUser sender;
 
     private String text;
 
     private ZonedDateTime timestamp;
 
     @ManyToOne
-    private TopicJpa topic;
+    private JpaTopic topic;
 
     @OneToMany(mappedBy = "whisper")
-    private List<ReplyJpa> replies;
+    private List<JpaReply> replies;
 
-    WhisperJpa() {}
+    JpaWhisper() {}
 
-    WhisperJpa(UUID id, UserJpa sender, String text, ZonedDateTime timestamp, TopicJpa topic, List<ReplyJpa> replies) {
+    JpaWhisper(UUID id, JpaUser sender, String text, ZonedDateTime timestamp, JpaTopic topic, List<JpaReply> replies) {
         this.id = id;
         this.sender = sender;
         this.text = text;
@@ -40,11 +42,11 @@ public class WhisperJpa {
         return id;
     }
 
-    UserJpa getSender() {
+    JpaUser getSender() {
         return sender;
     }
 
-    public void setSender(UserJpa sender) {
+    public void setSender(JpaUser sender) {
         this.sender = sender;
     }
 
@@ -56,15 +58,26 @@ public class WhisperJpa {
         return timestamp;
     }
 
-    TopicJpa getTopic() {
+    JpaTopic getTopic() {
         return topic;
     }
 
-    public void setTopic(TopicJpa topic) {
+    public void setTopic(JpaTopic topic) {
         this.topic = topic;
     }
 
-    List<ReplyJpa> getReplies() {
+    List<JpaReply> getReplies() {
         return replies;
+    }
+
+    Whisper toWhisper() {
+        return new Whisper(
+                this.id,
+                this.sender.getUsername(),
+                this.timestamp,
+                this.text,
+                Optional.ofNullable(this.topic).map(JpaTopic::getTopic),
+                this.replies.stream().map(JpaReply::toReply).toList()
+        );
     }
 }

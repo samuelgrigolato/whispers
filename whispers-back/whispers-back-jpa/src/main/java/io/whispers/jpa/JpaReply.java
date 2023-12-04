@@ -1,5 +1,6 @@
 package io.whispers.jpa;
 
+import io.whispers.domain.Reply;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
@@ -10,7 +11,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "replies")
-public class ReplyJpa {
+public class JpaReply {
     @Id
     private UUID id;
 
@@ -19,14 +20,14 @@ public class ReplyJpa {
     private ZonedDateTime timestamp;
 
     @ManyToOne
-    private UserJpa sender;
+    private JpaUser sender;
 
     @ManyToOne
-    private WhisperJpa whisper;
+    private JpaWhisper whisper;
 
-    ReplyJpa() {}
+    JpaReply() {}
 
-    ReplyJpa(UUID id, String text, ZonedDateTime timestamp, UserJpa sender, WhisperJpa whisper) {
+    JpaReply(UUID id, String text, ZonedDateTime timestamp, JpaUser sender, JpaWhisper whisper) {
         this.id = id;
         this.text = text;
         this.timestamp = timestamp;
@@ -46,7 +47,15 @@ public class ReplyJpa {
         return timestamp;
     }
 
-    UserJpa getSender() {
+    JpaUser getSender() {
         return sender;
+    }
+
+    Reply toReply() {
+        return new Reply(
+                this.sender.getUsername(),
+                this.timestamp,
+                this.text
+        );
     }
 }

@@ -1,5 +1,6 @@
 package io.whispers.dynamo;
 
+import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.ItemUtils;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.QueryRequest;
@@ -24,8 +25,14 @@ public class DynamoTopicRepository extends BaseDynamoRepository implements Topic
                 .withProjectionExpression("topic, whisperCount"));
         return result.getItems().stream()
                 .map(ItemUtils::toItem)
-                .map(TrendingTopicAdapter::new)
+                .map(DynamoTopicRepository::toTrendingTopic)
                 .collect(Collectors.toList());
     }
 
+    private static TrendingTopic toTrendingTopic(Item item) {
+        return new TrendingTopic(
+                item.getString("topic"),
+                item.getLong("whisperCount")
+        );
+    }
 }

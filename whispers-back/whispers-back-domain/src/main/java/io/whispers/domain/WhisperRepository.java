@@ -19,8 +19,8 @@ public interface WhisperRepository {
      */
     Collection<Whisper> findMostRecent(int limit);
 
-    Whisper create(CreateWhisperData data);
+    Whisper create(WhisperCreationRequest data);
 
-    Reply createReply(CreateReplyData data);
+    Reply createReply(ReplyRequest data);
 
 }

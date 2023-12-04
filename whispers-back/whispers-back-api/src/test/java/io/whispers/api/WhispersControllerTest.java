@@ -53,17 +53,18 @@ class WhispersControllerTest {
 
     @Test
     void shouldReturnLatestWhispers() throws Exception {
-        var whisper = mock(Whisper.class);
-        when(whisper.getId()).thenReturn(UUID.fromString("51d0eaaa-0b61-44a9-9d63-cd672727b792"));
-        when(whisper.getSender()).thenReturn("sender");
-        when(whisper.getTopic()).thenReturn(Optional.of("topic"));
-        when(whisper.getText()).thenReturn("text");
-        when(whisper.getTimestamp()).thenReturn(ZonedDateTime.of(2023, 1, 10, 15, 30, 0, 0, ZoneId.of("Etc/UTC")));
-        var reply = mock(Reply.class);
-        when(reply.getSender()).thenReturn("replySender");
-        when(reply.getTimestamp()).thenReturn(ZonedDateTime.of(2023, 1, 10, 15, 31, 0, 0, ZoneId.of("Etc/UTC")));
-        when(reply.getText()).thenReturn("replyText");
-        when(whisper.getReplies()).thenReturn(List.of(reply));
+        var whisper = new Whisper(
+                UUID.fromString("51d0eaaa-0b61-44a9-9d63-cd672727b792"),
+                "sender",
+                ZonedDateTime.of(2023, 1, 10, 15, 30, 0, 0, ZoneId.of("Etc/UTC")),
+                "text",
+                Optional.of("topic"),
+                List.of(new Reply(
+                        "replySender",
+                        ZonedDateTime.of(2023, 1, 10, 15, 31, 0, 0, ZoneId.of("Etc/UTC")),
+                        "replyText"
+                ))
+        );
         when(this.whisperRepository.findMostRecent(10)).thenReturn(List.of(whisper));
         this.mockMvc.perform(get("/whispers"))
                 .andExpect(status().isOk())
@@ -89,13 +90,14 @@ class WhispersControllerTest {
 
     @Test
     void shouldReturnMyWhispers() throws Exception {
-        var whisper = mock(Whisper.class);
-        when(whisper.getId()).thenReturn(UUID.fromString("51d0eaaa-0b61-44a9-9d63-cd672727b792"));
-        when(whisper.getSender()).thenReturn("sender");
-        when(whisper.getTopic()).thenReturn(Optional.of("topic"));
-        when(whisper.getText()).thenReturn("text");
-        when(whisper.getTimestamp()).thenReturn(ZonedDateTime.of(2023, 1, 10, 15, 30, 0, 0, ZoneId.of("Etc/UTC")));
-        when(whisper.getReplies()).thenReturn(Collections.emptyList());
+        var whisper = new Whisper(
+                UUID.fromString("51d0eaaa-0b61-44a9-9d63-cd672727b792"),
+                "sender",
+                ZonedDateTime.of(2023, 1, 10, 15, 30, 0, 0, ZoneId.of("Etc/UTC")),
+                "text",
+                Optional.of("topic"),
+                Collections.emptyList()
+        );
         when(this.whisperRepository.findMostRecentBySender("sender", 10)).thenReturn(List.of(whisper));
         this.mockMvc.perform(get("/whispers/mine")
                         .header("Authorization", "Bearer sender"))
@@ -116,14 +118,15 @@ class WhispersControllerTest {
 
     @Test
     void shouldCreate() throws Exception {
-        var whisper = mock(Whisper.class);
-        when(whisper.getId()).thenReturn(UUID.fromString("51d0eaaa-0b61-44a9-9d63-cd672727b792"));
-        when(whisper.getSender()).thenReturn("sender");
-        when(whisper.getTopic()).thenReturn(Optional.empty());
-        when(whisper.getText()).thenReturn("text");
-        when(whisper.getTimestamp()).thenReturn(ZonedDateTime.of(2023, 1, 10, 15, 30, 0, 0, ZoneId.of("Etc/UTC")));
-        when(whisper.getReplies()).thenReturn(Collections.emptyList());
-        when(this.whisperRepository.create(new CreateWhisperData("text", "sender")))
+        var whisper = new Whisper(
+                UUID.fromString("51d0eaaa-0b61-44a9-9d63-cd672727b792"),
+                "sender",
+                ZonedDateTime.of(2023, 1, 10, 15, 30, 0, 0, ZoneId.of("Etc/UTC")),
+                "text",
+                Optional.empty(),
+                Collections.emptyList()
+        );
+        when(this.whisperRepository.create(new WhisperCreationRequest("text", "sender")))
                 .thenReturn(whisper);
         this.mockMvc.perform(post("/whispers")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -148,11 +151,12 @@ class WhispersControllerTest {
 
     @Test
     void shouldCreateReply() throws Exception {
-        var reply = mock(Reply.class);
-        when(reply.getSender()).thenReturn("sender");
-        when(reply.getTimestamp()).thenReturn(ZonedDateTime.of(2023, 1, 10, 10, 30, 0, 0, ZoneId.of("Etc/UTC")));
-        when(reply.getText()).thenReturn("text");
-        var createReplyData = new CreateReplyData(
+        var reply = new Reply(
+                "sender",
+                ZonedDateTime.of(2023, 1, 10, 10, 30, 0, 0, ZoneId.of("Etc/UTC")),
+                "text"
+        );
+        var createReplyData = new ReplyRequest(
                 "text",
                 "sender",
                 UUID.fromString("530bbffb-455b-42e7-9759-23e508e89f03")

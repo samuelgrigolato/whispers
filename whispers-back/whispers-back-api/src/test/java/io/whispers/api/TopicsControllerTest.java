@@ -37,9 +37,7 @@ class TopicsControllerTest {
 
     @Test
     void shouldReturnTrendingTopics() throws Exception {
-        var topic = mock(TrendingTopic.class);
-        when(topic.getTopic()).thenReturn("topic1");
-        when(topic.getWhispers()).thenReturn(10L);
+        var topic = new TrendingTopic("topic1", 10L);
         var topics = List.of(topic);
         when(this.topicRepository.getTrending())
                 .thenReturn(topics);

@@ -8,14 +8,14 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "users")
-public class UserJpa {
+public class JpaUser {
     @Id
     private UUID id;
     private String username;
 
-    UserJpa() {}
+    JpaUser() {}
 
-    UserJpa(UUID id, String username) {
+    JpaUser(UUID id, String username) {
         this.id = id;
         this.username = username;
     }

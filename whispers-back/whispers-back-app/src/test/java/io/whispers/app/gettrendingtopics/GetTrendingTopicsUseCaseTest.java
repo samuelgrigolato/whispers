@@ -14,9 +14,7 @@ class GetTrendingTopicsUseCaseTest {
 
     @Test
     void testExecute() {
-        var topic = mock(TrendingTopic.class);
-        when(topic.getTopic()).thenReturn("topic");
-        when(topic.getWhispers()).thenReturn(10L);
+        var topic = new TrendingTopic("topic", 10L);
         var trendingTopics = List.of(topic);
 
         var topicRepositoryMock = mock(TopicRepository.class);

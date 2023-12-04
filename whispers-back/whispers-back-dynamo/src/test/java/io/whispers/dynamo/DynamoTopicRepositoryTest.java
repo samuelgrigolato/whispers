@@ -34,12 +34,12 @@ public class DynamoTopicRepositoryTest extends BaseDynamoTest {
         var topic1 = iterator.next();
         var topic2 = iterator.next();
         var topic3 = iterator.next();
-        assertEquals("topic12", topic1.getTopic());
-        assertEquals("topic11", topic2.getTopic());
-        assertEquals("topic10", topic3.getTopic());
-        assertEquals(12, topic1.getWhispers());
-        assertEquals(11, topic2.getWhispers());
-        assertEquals(10, topic3.getWhispers());
+        assertEquals("topic12", topic1.topic());
+        assertEquals("topic11", topic2.topic());
+        assertEquals("topic10", topic3.topic());
+        assertEquals(12, topic1.whispers());
+        assertEquals(11, topic2.whispers());
+        assertEquals(10, topic3.whispers());
     }
 
 }

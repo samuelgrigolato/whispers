@@ -14,59 +14,59 @@ import java.util.Collections;
 import java.util.UUID;
 
 @Repository
-class WhisperRepositoryJpaAdapter implements WhisperRepository {
+class JpaWhisperRepositoryAdapter implements WhisperRepository {
 
     @Autowired
-    private WhisperRepositoryJpa whisperRepositoryJpa;
+    private JpaWhisperRepository jpaWhisperRepository;
 
     @Autowired
-    private UserRepositoryJpa userRepositoryJpa;
+    private JpaUserRepository jpaUserRepository;
 
     @Autowired
-    private ReplyRepositoryJpa replyRepositoryJpa;
+    private JpaReplyRepository jpaReplyRepository;
 
     @Override
     public Collection<Whisper> findMostRecent(int limit) {
         Pageable pageable = PageRequest.ofSize(limit).withSort(Sort.by("timestamp").descending());
-        return this.whisperRepositoryJpa.findAll(pageable)
+        return this.jpaWhisperRepository.findAll(pageable)
                 .stream()
-                .map(x -> (Whisper) new WhisperJpaAdapter(x))
+                .map(JpaWhisper::toWhisper)
                 .toList();
     }
 
     @Override
     public Collection<Whisper> findMostRecentBySender(String sender, int limit) {
-        var whisperJpa = new WhisperJpa();
-        var userJpa = new UserJpa();
+        var whisperJpa = new JpaWhisper();
+        var userJpa = new JpaUser();
         userJpa.setUsername(sender);
         whisperJpa.setSender(userJpa);
         Pageable pageable = PageRequest.ofSize(limit).withSort(Sort.by("timestamp").descending());
-        return this.whisperRepositoryJpa.findAll(Example.of(whisperJpa), pageable)
+        return this.jpaWhisperRepository.findAll(Example.of(whisperJpa), pageable)
                 .stream()
-                .map(x -> (Whisper) new WhisperJpaAdapter(x))
+                .map(JpaWhisper::toWhisper)
                 .toList();
     }
 
     @Override
     public Collection<Whisper> findMostRecentByTopic(String topic, int limit) {
-        var whisperJpa = new WhisperJpa();
-        var topicJpa = new TopicJpa();
+        var whisperJpa = new JpaWhisper();
+        var topicJpa = new JpaTopic();
         topicJpa.setTopic(topic);
         whisperJpa.setTopic(topicJpa);
         Pageable pageable = PageRequest.ofSize(limit).withSort(Sort.by("timestamp").descending());
-        return this.whisperRepositoryJpa.findAll(Example.of(whisperJpa), pageable)
+        return this.jpaWhisperRepository.findAll(Example.of(whisperJpa), pageable)
                 .stream()
-                .map(x -> (Whisper) new WhisperJpaAdapter(x))
+                .map(JpaWhisper::toWhisper)
                 .toList();
     }
 
     @Override
-    public Whisper create(CreateWhisperData data) {
-        var sender = this.userRepositoryJpa.findByUsername(data.sender());
+    public Whisper create(WhisperCreationRequest data) {
+        var sender = this.jpaUserRepository.findByUsername(data.sender());
         if (sender == null) {
             throw new IllegalArgumentException("sender not found");
         }
-        var whisper = new WhisperJpa(
+        var whisper = new JpaWhisper(
                 UUID.randomUUID(),
                 sender,
                 data.text(),
@@ -74,26 +74,26 @@ class WhisperRepositoryJpaAdapter implements WhisperRepository {
                 null,
                 Collections.emptyList()
         );
-        this.whisperRepositoryJpa.save(whisper);
-        return new WhisperJpaAdapter(whisper);
+        this.jpaWhisperRepository.save(whisper);
+        return whisper.toWhisper();
     }
 
     @Override
-    public Reply createReply(CreateReplyData data) {
-        var sender = this.userRepositoryJpa.findByUsername(data.sender());
+    public Reply createReply(ReplyRequest data) {
+        var sender = this.jpaUserRepository.findByUsername(data.sender());
         if (sender == null) {
             throw new IllegalArgumentException("sender not found");
         }
-        var whisper = this.whisperRepositoryJpa.findById(data.replyingTo())
+        var whisper = this.jpaWhisperRepository.findById(data.replyingTo())
                 .orElseThrow();
-        var reply = new ReplyJpa(
+        var reply = new JpaReply(
                 UUID.randomUUID(),
                 data.text(),
                 ZonedDateTime.now(),
                 sender,
                 whisper
         );
-        this.replyRepositoryJpa.save(reply);
-        return new ReplyJpaAdapter(reply);
+        this.jpaReplyRepository.save(reply);
+        return reply.toReply();
     }
 }

@@ -14,13 +14,14 @@ class PostReplyUseCaseTest {
 
     @Test
     void testExecute() {
-        var reply = mock(Reply.class);
-        when(reply.getSender()).thenReturn("sender");
-        when(reply.getTimestamp()).thenReturn(ZonedDateTime.of(2023, 1, 10, 10, 30, 0, 0, ZoneId.systemDefault()));
-        when(reply.getText()).thenReturn("text");
+        var reply = new Reply(
+                "sender",
+                ZonedDateTime.of(2023, 1, 10, 10, 30, 0, 0, ZoneId.systemDefault()),
+                "text"
+        );
 
         var whisperRepositoryMock = mock(WhisperRepository.class);
-        var createReplyData = new CreateReplyData(
+        var createReplyData = new ReplyRequest(
                 "text",
                 "sender",
                 UUID.fromString("530bbffb-455b-42e7-9759-23e508e89f03")

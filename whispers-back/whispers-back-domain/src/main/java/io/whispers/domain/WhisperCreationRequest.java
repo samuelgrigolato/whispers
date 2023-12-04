@@ -1,6 +1,6 @@
 package io.whispers.domain;
 
-public record CreateWhisperData(
+public record WhisperCreationRequest(
         String text,
         String sender
 ) {

@@ -17,15 +17,15 @@ public record RecentWhisperView(
 ) {
     static RecentWhisperView from(Whisper whisper) {
         return new RecentWhisperView(
-                whisper.getId(),
-                whisper.getSender(),
-                whisper.getTimestamp(),
-                whisper.getText(),
-                whisper.getTopic(),
-                whisper.getReplies().stream()
-                        .map(x -> new RecentReplyView(x.getSender(),
-                                x.getTimestamp(),
-                                x.getText()))
+                whisper.id(),
+                whisper.sender(),
+                whisper.timestamp(),
+                whisper.text(),
+                whisper.topic(),
+                whisper.replies().stream()
+                        .map(x -> new RecentReplyView(x.sender(),
+                                x.timestamp(),
+                                x.text()))
                         .toList()
         );
     }

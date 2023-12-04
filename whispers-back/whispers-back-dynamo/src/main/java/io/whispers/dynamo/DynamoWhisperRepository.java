@@ -23,7 +23,7 @@ public class DynamoWhisperRepository extends BaseDynamoRepository implements Whi
 
     @Override
     public Collection<Whisper> findMostRecentBySender(String sender, int limit) {
-        QueryResult result = dynamoDB.query(new QueryRequest()
+        var result = dynamoDB.query(new QueryRequest()
                 .withTableName(getTableName())
                 .withIndexName("gsi3")
                 .withKeyConditionExpression("gsi3Pk = :sender")
@@ -38,7 +38,7 @@ public class DynamoWhisperRepository extends BaseDynamoRepository implements Whi
 
     @Override
     public Collection<Whisper> findMostRecentByTopic(String topic, int limit) {
-        QueryResult result = dynamoDB.query(new QueryRequest()
+        var result = dynamoDB.query(new QueryRequest()
                 .withTableName(getTableName())
                 .withIndexName("gsi2")
                 .withKeyConditionExpression("gsi2Pk = :topic")
@@ -53,7 +53,7 @@ public class DynamoWhisperRepository extends BaseDynamoRepository implements Whi
 
     @Override
     public Collection<Whisper> findMostRecent(int limit) {
-        QueryResult result = dynamoDB.query(new QueryRequest()
+        var result = dynamoDB.query(new QueryRequest()
                 .withTableName(getTableName())
                 .withIndexName("gsi1")
                 .withKeyConditionExpression("gsi1Pk = :global")
@@ -84,18 +84,18 @@ public class DynamoWhisperRepository extends BaseDynamoRepository implements Whi
 
         return batchResult.getResponses().get(getTableName()).stream()
                 .map(ItemUtils::toItem)
-                .map(item -> new WhisperAdapter(item, objectMapper))
-                .sorted(Comparator.comparing(Whisper::getTimestamp).reversed())
+                .map(item -> toWhisper(item, objectMapper))
+                .sorted(Comparator.comparing(Whisper::timestamp).reversed())
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Whisper create(CreateWhisperData data) {
+    public Whisper create(WhisperCreationRequest data) {
         try {
             var whisperUuid = UUID.randomUUID();
             var formattedTimestamp = ZonedDateTime.now().format(ISO_INSTANT);
             var suffixedFormattedTimestamp = formattedTimestamp + "#" + whisperUuid;
-            Item item = new Item()
+            var item = new Item()
                     .withString("pk", "whisper#" + whisperUuid)
                     .withString("sk", "entry")
                     .withString("gsi1Pk", "global")
@@ -109,27 +109,27 @@ public class DynamoWhisperRepository extends BaseDynamoRepository implements Whi
                     .withString("timestamp", formattedTimestamp)
                     .withString("replies", objectMapper.writeValueAsString(List.of()));
             dynamoDB.putItem(getTableName(), ItemUtils.toAttributeValues(item));
-            return new WhisperAdapter(item, objectMapper);
+            return toWhisper(item, objectMapper);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Unable to serialize replies", e);
         }
     }
 
     @Override
-    public Reply createReply(CreateReplyData data) {
+    public Reply createReply(ReplyRequest data) {
         var whisperUuid = data.replyingTo();
-        Map<String, AttributeValue> whisperKey = ItemUtils.fromSimpleMap(Map.of(
+        var whisperKey = ItemUtils.fromSimpleMap(Map.of(
                 "pk", "whisper#" + whisperUuid,
                 "sk", "entry"));
 
-        GetItemResult result = dynamoDB.getItem(new GetItemRequest()
+        var result = dynamoDB.getItem(new GetItemRequest()
                 .withTableName(getTableName())
                 .withKey(whisperKey));
 
-        ReplyAdapter reply = new ReplyAdapter(data.sender(), ZonedDateTime.now(), data.text());
-        List<Reply> replies = WhisperAdapter.parseReplies(ItemUtils.toItem(result.getItem()), objectMapper);
+        var reply = new Reply(data.sender(), ZonedDateTime.now(), data.text());
+        var replies = parseReplies(ItemUtils.toItem(result.getItem()), objectMapper);
         replies.add(reply);
-        String updatedRepliesStr = WhisperAdapter.serializeReplies(replies, objectMapper);
+        var updatedRepliesStr = serializeReplies(replies, objectMapper);
 
         dynamoDB.updateItem(new UpdateItemRequest()
                 .withTableName(getTableName())
@@ -139,6 +139,42 @@ public class DynamoWhisperRepository extends BaseDynamoRepository implements Whi
                         ":replies", updatedRepliesStr))));
 
         return reply;
+    }
+
+    private Whisper toWhisper(Item item, ObjectMapper objectMapper) {
+        return new Whisper(
+                UUID.fromString(item.getString("uuid")),
+                item.getString("sender"),
+                ZonedDateTime.parse(item.getString("timestamp")),
+                item.getString("text"),
+                Optional.ofNullable(item.getString("topic")),
+                parseReplies(item, objectMapper)
+        );
+    }
+
+    private static List<Reply> parseReplies(Item item, ObjectMapper objectMapper) {
+        List<Reply> replies;
+        var repliesStr = item.getString("replies");
+        if (repliesStr != null) {
+            try {
+                replies = objectMapper
+                        .readerForListOf(Reply.class)
+                        .readValue(repliesStr);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Unable to parse replies", e);
+            }
+        } else {
+            replies = List.of();
+        }
+        return replies;
+    }
+
+    private static String serializeReplies(List<Reply> replies, ObjectMapper objectMapper) {
+        try {
+            return objectMapper.writeValueAsString(replies);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Unable to serialize replies", e);
+        }
     }
 
 }
