@@ -22,3 +22,7 @@ services:
     ports:
       - "4566:4566"            # LocalStack Gateway
       - "4510-4559:4510-4559"  # external services port range
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
