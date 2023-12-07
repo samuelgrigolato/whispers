@@ -9,3 +9,4 @@ zip -r ../lambda.zip .
 cd ..
 zip lambda.zip lambda_rds.py
 zip lambda.zip lambda_dynamo.py
+zip lambda.zip sns_publisher.py

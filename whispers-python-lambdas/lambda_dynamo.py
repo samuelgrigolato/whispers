@@ -11,6 +11,48 @@ from sns_publisher import to_sns_message, publish_sns_batch
 
 def handler(event, context):
     dynamo_client = boto3.client('dynamodb')
+    if event and 'Records' in event:
+        for record in event['Records']:
+            sns_message = json.loads(record['body'])
+            event = json.loads(sns_message['Message'])
+            if isinstance(event, list):
+                for trending_topic in event:
+                    print(f"ingesting trending topic {trending_topic['topic']} with whisper count {trending_topic['whisperCount']}")
+                    topic = trending_topic['topic']
+                    whisper_count_str = str(trending_topic['whisperCount'])
+                    sk = ('00000000000000000000' + whisper_count_str)[-20:]
+                    dynamo_client.put_item(
+                        TableName='whispers-back-dev',
+                        Item={
+                            'pk': {'S': f'trending-topics'},
+                            'sk': {'S': sk},
+                            'topic': {'S': topic},
+                            'whisperCount': {'N': whisper_count_str},
+                        }
+                    )
+            else:
+                print(f"updating whisper {event['whisperUuid']} with topic {event['topic']}")
+                whisper_uuid = event['whisperUuid']
+                topic = event['topic']
+                dynamo_client.update_item(
+                    TableName='whispers-back-dev',
+                    Key={
+                        'pk': {'S': f'whisper#{whisper_uuid}'},
+                        'sk': {'S': 'entry'},
+                    },
+                    AttributeUpdates={
+                        'topic': {
+                            'Value': {'S': topic},
+                            'Action': 'PUT',
+                        },
+                        'gsi2Pk': {
+                            'Value': {'S': topic},
+                            'Action': 'PUT',
+                        },
+                    },
+                )
+        return
+
     sns_client = boto3.client('sns')
     users = [
         f"random-{str(uuid4())}"
@@ -56,4 +98,37 @@ def random_string(length):
 
 
 if __name__ == '__main__':
+    # whisper generation
     handler(None, None)
+    # trending topic ingestion
+    # handler({
+    #     'Records': [
+    #         {
+    #             'body': json.dumps({
+    #                 'Message': json.dumps([
+    #                     {
+    #                         'topic': 'topic1',
+    #                         'whisperCount': 1000,
+    #                     },
+    #                     {
+    #                         'topic': 'topic2',
+    #                         'whisperCount': 200,
+    #                     },
+    #                 ])
+    #             })
+    #         }
+    #     ]
+    # }, None)
+    # whisper update
+    # handler({
+    #     'Records': [
+    #         {
+    #             'body': json.dumps({
+    #                 'Message': json.dumps({
+    #                     'whisperUuid': 'b7a0c5e0-7e4e-4c3e-8b4a-9d7d3b7b2a6f',
+    #                     'topic': 'topic1',
+    #                 })
+    #             })
+    #         }
+    #     ]
+    # }, None)
