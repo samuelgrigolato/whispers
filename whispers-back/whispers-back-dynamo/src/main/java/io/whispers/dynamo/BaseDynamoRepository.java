@@ -9,7 +9,7 @@ public class BaseDynamoRepository {
     @Autowired
     protected AmazonDynamoDB dynamoDB;
 
-    @Value("${dynamodb.table.name}")
+    @Value("${dynamodb.table_name}")
     private String tableName;
 
     protected String getTableName() {

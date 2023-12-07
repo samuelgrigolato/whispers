@@ -1,59 +1,58 @@
-package io.whispers.dynamo;
+package io.whispers.sns;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.sns.AmazonSNS;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.localstack.LocalStackContainer;
+import org.testcontainers.utility.DockerImageName;
+
+import static org.testcontainers.containers.localstack.LocalStackContainer.Service.SNS;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
         JacksonTestConfiguration.class,
-        WhispersDynamoConfiguration.class
+        WhispersSnsConfiguration.class
 })
 @TestPropertySource(properties = {
         "aws.credentials.access_key_id=fakeAccessKeyId",
         "aws.credentials.secret_access_key=fakeSecretAccessKey",
-        "dynamodb.table_name=whispers-back-test"
+        "whisper_created.topic_arn=arn:aws:sns:us-east-1:000000000000:whisper-created"
 })
-public class BaseDynamoTest {
+class BaseSnsTest {
 
-    static GenericContainer<?> dynamo = new GenericContainer<>("amazon/dynamodb-local:latest")
-            .withExposedPorts(8000);
+    static LocalStackContainer localstack = new LocalStackContainer(DockerImageName.parse("localstack/localstack:0.11.3"))
+            .withServices(SNS)
+            .withEnv("DEFAULT_REGION", "us-east-1");
 
     @Autowired
-    protected AmazonDynamoDB dynamoDB;
-
-    @Value("${dynamodb.table_name}")
-    protected String tableName;
+    protected AmazonSNS amazonSNS;
 
     @BeforeAll
     static void beforeAll() {
-        dynamo.start();
+        localstack.start();
     }
 
     @AfterAll
     static void afterAll() {
-        dynamo.stop();
+        localstack.stop();
     }
 
-    @AfterEach
-    void afterEach() {
-        dynamoDB.deleteTable(tableName);
-        WhispersDynamoConfiguration.createTable(tableName, dynamoDB);
+    @BeforeEach
+    void beforeEach() {
+        amazonSNS.createTopic("whisper-created");
     }
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("dynamodb.endpoint", () -> "http://localhost:" + dynamo.getMappedPort(8000));
+        registry.add("sns.endpoint", () -> localstack.getEndpoint());
     }
 
 }

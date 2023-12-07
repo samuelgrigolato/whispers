@@ -6,6 +6,7 @@ import io.whispers.app.postreply.PostReplyUseCase;
 import io.whispers.app.postwhisper.PostWhisperRequest;
 import io.whispers.app.postwhisper.PostWhisperUseCase;
 import io.whispers.domain.UserRepository;
+import io.whispers.domain.WhisperEventPublisher;
 import io.whispers.domain.WhisperRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,9 @@ class WhispersController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private WhisperEventPublisher whisperEventPublisher;
 
     @GetMapping(path = "")
     Collection<RecentWhisperView> get(@RequestParam("topic") Optional<String> topic) {
@@ -48,7 +52,8 @@ class WhispersController {
         if (body.replyingTo().isEmpty()) {
             PostWhisperUseCase useCase = new PostWhisperUseCase(
                     this.whisperRepository,
-                    this.userRepository);
+                    this.userRepository,
+                    this.whisperEventPublisher);
             return useCase.execute(new PostWhisperRequest(
                     sender,
                     body.text()

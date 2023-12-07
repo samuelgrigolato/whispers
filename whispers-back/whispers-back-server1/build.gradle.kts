@@ -14,6 +14,7 @@ repositories {
 dependencies {
     implementation(project(":whispers-back-api"))
     implementation(project(":whispers-back-jpa"))
+    implementation(project(":whispers-back-sns"))
     implementation("org.springframework.boot:spring-boot-starter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

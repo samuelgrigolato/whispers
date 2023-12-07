@@ -17,3 +17,8 @@ services:
     image: "amazon/dynamodb-local:latest"
     ports:
       - "8000:8000"
+  localstack:
+    image: "localstack/localstack:latest"
+    ports:
+      - "4566:4566"            # LocalStack Gateway
+      - "4510-4559:4510-4559"  # external services port range

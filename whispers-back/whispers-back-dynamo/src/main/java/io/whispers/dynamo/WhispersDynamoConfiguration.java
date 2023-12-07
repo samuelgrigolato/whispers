@@ -15,7 +15,7 @@ class WhispersDynamoConfiguration {
 
     @Bean
     AmazonDynamoDB amazonDynamoDB(@Value("${dynamodb.endpoint}") String maybeEndpoint,
-                                  @Value("${dynamodb.table.name}") String tableName,
+                                  @Value("${dynamodb.table_name}") String tableName,
                                   @Value("${aws.credentials.access_key_id}") String accessKeyId,
                                   @Value("${aws.credentials.secret_access_key}") String secretAccessKey) {
         var builder = AmazonDynamoDBClientBuilder.standard();

@@ -1,9 +1,6 @@
 package io.whispers.app.postwhisper;
 
-import io.whispers.domain.UserRepository;
-import io.whispers.domain.Whisper;
-import io.whispers.domain.WhisperCreationRequest;
-import io.whispers.domain.WhisperRepository;
+import io.whispers.domain.*;
 
 public class PostWhisperUseCase {
 
@@ -11,10 +8,14 @@ public class PostWhisperUseCase {
 
     private UserRepository userRepository;
 
+    private WhisperEventPublisher whisperEventPublisher;
+
     public PostWhisperUseCase(WhisperRepository whisperRepository,
-                              UserRepository userRepository) {
+                              UserRepository userRepository,
+                              WhisperEventPublisher whisperEventPublisher) {
         this.whisperRepository = whisperRepository;
         this.userRepository = userRepository;
+        this.whisperEventPublisher = whisperEventPublisher;
     }
 
     public PostWhisperResponse execute(PostWhisperRequest request) {
@@ -22,6 +23,12 @@ public class PostWhisperUseCase {
         Whisper whisper = this.whisperRepository.create(new WhisperCreationRequest(
                 request.text(),
                 request.sender()
+        ));
+        this.whisperEventPublisher.publish(new WhisperCreatedEvent(
+                whisper.id(),
+                whisper.sender(),
+                whisper.text(),
+                whisper.timestamp()
         ));
         return PostWhisperResponse.from(whisper);
     }
