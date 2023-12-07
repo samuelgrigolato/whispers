@@ -10,7 +10,6 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/whispers-back-api" />
-            <option value="$PROJECT_DIR$/whispers-back-api/whispers-back-jpa" />
             <option value="$PROJECT_DIR$/whispers-back-app" />
             <option value="$PROJECT_DIR$/whispers-back-domain" />
             <option value="$PROJECT_DIR$/whispers-back-dynamo" />
