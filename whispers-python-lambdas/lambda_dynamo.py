@@ -20,7 +20,7 @@ def handler(event, context):
                     print(f"ingesting trending topic {trending_topic['topic']} with whisper count {trending_topic['whisperCount']}")
                     topic = trending_topic['topic']
                     whisper_count_str = str(trending_topic['whisperCount'])
-                    sk = ('00000000000000000000' + whisper_count_str)[-20:]
+                    sk = ('00000000000000000000' + whisper_count_str)[-20:] + '#' + topic
                     dynamo_client.put_item(
                         TableName='whispers-back-dev',
                         Item={
@@ -66,7 +66,7 @@ def handler(event, context):
         formatted_timestamp = datetime.now(timezone.utc).isoformat()
         suffixed_timestamp = f'{formatted_timestamp}#{uuid}'
         sender = users[i % 10]
-        text = f"whisper {random_string(25)} {random_string(25)} {random_string(25)} {random_string(25)}"
+        text = f"whisper {random_string(25)} #random{i}"
         resp = dynamo_client.put_item(
             TableName='whispers-back-dev',
             Item={
