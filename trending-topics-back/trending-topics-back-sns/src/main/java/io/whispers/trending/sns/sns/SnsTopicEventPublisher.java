@@ -17,7 +17,9 @@ public class SnsTopicEventPublisher implements TopicEventPublisher {
     private ObjectMapper objectMapper;
     private String topicResolvedTopicArn;
 
-    public SnsTopicEventPublisher(AmazonSNS amazonSns, ObjectMapper objectMapper, String topicResolvedTopicArn) {
+    public SnsTopicEventPublisher(AmazonSNS amazonSns,
+                                  ObjectMapper objectMapper,
+                                  String topicResolvedTopicArn) {
         this.amazonSns = amazonSns;
         this.objectMapper = objectMapper;
         this.topicResolvedTopicArn = topicResolvedTopicArn;

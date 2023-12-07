@@ -14,6 +14,7 @@
             <option value="$PROJECT_DIR$/trending-topics-back-redis" />
             <option value="$PROJECT_DIR$/trending-topics-back-simple-resolver" />
             <option value="$PROJECT_DIR$/trending-topics-back-sns" />
+            <option value="$PROJECT_DIR$/trending-topics-back-top-10-publisher1" />
             <option value="$PROJECT_DIR$/trending-topics-back-whisper-created1" />
           </set>
         </option>
