@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleHome" value="" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/trending-topics-back-app" />
+            <option value="$PROJECT_DIR$/trending-topics-back-domain" />
+            <option value="$PROJECT_DIR$/trending-topics-back-lambda" />
+            <option value="$PROJECT_DIR$/trending-topics-back-redis" />
+            <option value="$PROJECT_DIR$/trending-topics-back-simple-resolver" />
+            <option value="$PROJECT_DIR$/trending-topics-back-sns" />
+            <option value="$PROJECT_DIR$/trending-topics-back-whisper-created1" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>
