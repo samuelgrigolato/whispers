@@ -2,7 +2,7 @@
 
 set -e
 
-for i in $(seq 1 20); do
+for i in $(seq 1 10); do
     echo $i
     nohup ./invoker $1 &
 done
