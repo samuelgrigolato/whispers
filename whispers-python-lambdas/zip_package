@@ -4,9 +4,11 @@ set -e
 
 rm lambda.zip
 pip install --target packages aws-psycopg2
+pip install --target packages amazon-dax-client
 cd packages
 zip -r ../lambda.zip .
 cd ..
 zip lambda.zip lambda_rds.py
 zip lambda.zip lambda_dynamo.py
+zip lambda.zip lambda_feed_query.py
 zip lambda.zip sns_publisher.py
