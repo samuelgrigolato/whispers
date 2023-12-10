@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e
+
+ACCOUNT_ID=661790212808
+TAG_NAME=$1
+
+# if macos
+docker buildx build . \
+  --platform=linux/amd64 \
+  -t $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/whispers-back-dev-worker2:$TAG_NAME
+# if linux
+# docker build . \
+#   -t $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/whispers-back-dev-worker2:$TAG_NAME
