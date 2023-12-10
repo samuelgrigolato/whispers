@@ -9,6 +9,7 @@ import io.whispers.domain.TrendingTopic;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,12 +22,19 @@ public class DynamoTopicRepository extends BaseDynamoRepository implements Topic
         var result = dynamoDB.query(new QueryRequest(getTableName())
                 .withKeyConditionExpression("pk = :pk")
                 .withExpressionAttributeValues(Map.of(":pk", new AttributeValue("trending-topics")))
-                .withLimit(10)
+                .withLimit(20)
                 .withScanIndexForward(false)
                 .withProjectionExpression("topic, whisperCount"));
         return result.getItems().stream()
                 .map(ItemUtils::toItem)
                 .map(DynamoTopicRepository::toTrendingTopic)
+                .collect(Collectors.groupingBy(TrendingTopic::topic))
+                .entrySet().stream()
+                .map(entry -> entry.getValue().stream()
+                        .reduce(new TrendingTopic(entry.getKey(), 0),
+                                (t1, t2) -> new TrendingTopic(t1.topic(), Math.max(t1.whisperCount(), t2.whisperCount()))))
+                .limit(10)
+                .sorted(Comparator.comparing(TrendingTopic::whisperCount).reversed())
                 .collect(Collectors.toList());
     }
 
