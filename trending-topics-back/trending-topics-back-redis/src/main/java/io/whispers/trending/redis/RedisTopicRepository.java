@@ -4,15 +4,14 @@ import io.whispers.trending.domain.TopicRepository;
 import io.whispers.trending.domain.TrendingTopic;
 import org.redisson.api.RedissonClient;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class RedisTopicRepository implements TopicRepository {
 
-    public static final int BUCKETS = 100;
+    private static final int MINUTES = 3;
     private RedissonClient redisson;
 
     public RedisTopicRepository(RedissonClient redisson) {
@@ -21,29 +20,64 @@ public class RedisTopicRepository implements TopicRepository {
 
     @Override
     public void incrementWhisperCounts(Map<String, Integer> topicIncrements) {
+        String minuteMapKey = getMinuteMapKey(ZonedDateTime.now(ZoneId.of("Etc/UTC")));
         for (var entry : topicIncrements.entrySet()) {
             var topic = entry.getKey();
             var increment = entry.getValue();
-            var topicBucket = "topic-bucket-" + Math.abs(topic.hashCode()) % BUCKETS;
-            var map = this.redisson.getMap(topicBucket);
-            map.addAndGet(topic, increment.longValue());
+            var map = this.redisson.<String, Map<String, Integer>>getMap("topics");
+            var minuteMap = map.get(minuteMapKey);
+            if (minuteMap == null) {
+                minuteMap = new HashMap<>();
+            }
+            minuteMap.putIfAbsent(topic, 0);
+            minuteMap.put(topic, minuteMap.get(topic) + increment);
+            map.put(minuteMapKey, minuteMap); // this is necessary even if the map already exists!
         }
     }
 
     @Override
     public List<TrendingTopic> getTrendingTopics() {
-        var all = new TreeSet<>(Comparator.comparing(TrendingTopic::whisperCount).reversed());
-        for (var i = 0; i < BUCKETS; i++) {
-            var topicBucket = "topic-bucket-" + i;
-            var map = this.redisson.getMap(topicBucket);
-            map.entrySet().forEach(entry -> all.add(new TrendingTopic(
-                    (String) entry.getKey(),
-                    (Integer) entry.getValue()
-            )));
+        var lastMinutesMapKeys = getLastMinutesMapKeys();
+        var aggregatedWhisperCounts = new HashMap<String, Integer>();
+
+        var map = this.redisson.<String, Map<String, Integer>>getMap("topics");
+        for (var minuteMapKey : lastMinutesMapKeys) {
+            var minuteMap = map.get(minuteMapKey);
+            if (minuteMap != null) {
+                for (var entry : minuteMap.entrySet()) {
+                    var topic = entry.getKey();
+                    var whisperCount = entry.getValue();
+                    aggregatedWhisperCounts.putIfAbsent(topic, 0);
+                    aggregatedWhisperCounts.put(topic, aggregatedWhisperCounts.get(topic) + whisperCount);
+                }
+            }
         }
-        return all.stream()
+
+        // older keys cleanup (older than the required minutes)
+        map.keySet().stream()
+                .filter(key -> !lastMinutesMapKeys.contains(key))
+                .forEach(map::fastRemove);
+
+        return aggregatedWhisperCounts.entrySet().stream()
+                .sorted(Comparator.comparing(Map.Entry::getValue, Comparator.reverseOrder()))
                 .limit(10)
+                .map(entry -> new TrendingTopic(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
+    }
+
+    private static Set<String> getLastMinutesMapKeys() {
+        var result = new HashSet<String>();
+        var dateTime = ZonedDateTime.now(ZoneId.of("Etc/UTC"));
+        for (var i = 0; i < MINUTES; i++) {
+            var key = getMinuteMapKey(dateTime);
+            result.add(key);
+            dateTime = dateTime.minusMinutes(1);
+        }
+        return result;
+    }
+
+    private static String getMinuteMapKey(ZonedDateTime dateTime) {
+        return String.format("%02d:%02d", dateTime.getHour(), dateTime.getMinute());
     }
 
 }
