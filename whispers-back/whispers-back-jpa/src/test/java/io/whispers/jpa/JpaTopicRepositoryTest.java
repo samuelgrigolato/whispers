@@ -25,9 +25,9 @@ class JpaTopicRepositoryTest extends BaseJpaTest {
         assertEquals("AI", topic1.topic());
         assertEquals("food", topic2.topic());
         assertEquals("music", topic3.topic());
-        assertEquals(4, topic1.whispers());
-        assertEquals(3, topic2.whispers());
-        assertEquals(2, topic3.whispers());
+        assertEquals(4, topic1.whisperCount());
+        assertEquals(3, topic2.whisperCount());
+        assertEquals(2, topic3.whisperCount());
     }
 
 }

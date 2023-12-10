@@ -13,8 +13,15 @@ public class JpaTopic {
     private UUID id;
     private String topic;
 
+    public JpaTopic() {
+    }
+
     UUID getId() {
         return id;
+    }
+
+    void setId(UUID id) {
+        this.id = id;
     }
 
     String getTopic() {

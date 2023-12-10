@@ -1,6 +1,7 @@
 package io.whispers.domain;
 
 import java.util.Collection;
+import java.util.UUID;
 
 public interface WhisperRepository {
 
@@ -23,4 +24,5 @@ public interface WhisperRepository {
 
     Reply createReply(ReplyRequest data);
 
+    void updateTopic(UUID whisperId, String topic);
 }

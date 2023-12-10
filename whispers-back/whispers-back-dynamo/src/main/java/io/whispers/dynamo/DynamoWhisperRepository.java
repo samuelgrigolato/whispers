@@ -65,7 +65,7 @@ public class DynamoWhisperRepository extends BaseDynamoRepository implements Whi
                     .withKeyConditionExpression("gsi1Pk = :global")
                     .withExpressionAttributeValues(Map.of(
                             ":global", new AttributeValue("global" + thisI)))
-                    .withProjectionExpression("pk, sk")
+                    .withProjectionExpression("pk, sk, gsi1Sk")
                     .withScanIndexForward(false)
                     .withLimit(limit)));
         }
@@ -80,7 +80,10 @@ public class DynamoWhisperRepository extends BaseDynamoRepository implements Whi
                             throw new RuntimeException(e);
                         }
                     })
-                    .sorted(Comparator.comparing(item -> item.get("sk").getS(), Comparator.reverseOrder()))
+                    .sorted(Comparator.comparing(item -> item.get("gsi1Sk").getS(), Comparator.reverseOrder()))
+                    .map(item -> Map.of(
+                            "pk", item.get("pk"),
+                            "sk", item.get("sk")))
                     .collect(Collectors.toList());
             return batchGetWhispers(new QueryResult()
                     .withItems(allItems.subList(0, Math.min(allItems.size(), 10))));
@@ -122,7 +125,7 @@ public class DynamoWhisperRepository extends BaseDynamoRepository implements Whi
             var item = new Item()
                     .withString("pk", "whisper#" + whisperUuid)
                     .withString("sk", "entry")
-                    .withString("gsi1Pk", "global" + (whisperUuid.hashCode() % 10))
+                    .withString("gsi1Pk", "global" + (Math.abs(whisperUuid.hashCode()) % 10))
                     .withString("gsi1Sk", suffixedFormattedTimestamp)
                     .withString("gsi2Sk", suffixedFormattedTimestamp)
                     .withString("gsi3Pk", data.sender())
@@ -165,6 +168,23 @@ public class DynamoWhisperRepository extends BaseDynamoRepository implements Whi
         return reply;
     }
 
+    @Override
+    public void updateTopic(UUID whisperId, String topic) {
+        var whisperKey = ItemUtils.fromSimpleMap(Map.of(
+                "pk", "whisper#" + whisperId,
+                "sk", "entry"));
+        var updateValues = ItemUtils.fromSimpleMap(Map.of(":topic", topic));
+
+        dynamoDB.updateItem(new UpdateItemRequest()
+                .withTableName(getTableName())
+                .withKey(whisperKey)
+                .withUpdateExpression("""
+                    SET topic = :topic,
+                        gsi2Pk = :topic
+                """)
+                .withExpressionAttributeValues(updateValues));
+    }
+
     private Whisper toWhisper(Item item, ObjectMapper objectMapper) {
         return new Whisper(
                 UUID.fromString(item.getString("uuid")),
@@ -200,5 +220,4 @@ public class DynamoWhisperRepository extends BaseDynamoRepository implements Whi
             throw new RuntimeException("Unable to serialize replies", e);
         }
     }
-
 }

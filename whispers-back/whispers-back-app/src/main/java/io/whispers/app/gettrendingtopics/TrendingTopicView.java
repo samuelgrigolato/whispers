@@ -4,12 +4,12 @@ import io.whispers.domain.TrendingTopic;
 
 public record TrendingTopicView(
         String topic,
-        Long whispers
+        Integer whispers
 ) {
     public static TrendingTopicView from(TrendingTopic trendingTopic) {
         return new TrendingTopicView(
                 trendingTopic.topic(),
-                trendingTopic.whispers()
+                trendingTopic.whisperCount()
         );
     }
 }

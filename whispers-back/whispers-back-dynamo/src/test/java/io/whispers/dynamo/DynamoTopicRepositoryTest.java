@@ -37,9 +37,9 @@ public class DynamoTopicRepositoryTest extends BaseDynamoTest {
         assertEquals("topic12", topic1.topic());
         assertEquals("topic11", topic2.topic());
         assertEquals("topic10", topic3.topic());
-        assertEquals(12, topic1.whispers());
-        assertEquals(11, topic2.whispers());
-        assertEquals(10, topic3.whispers());
+        assertEquals(12, topic1.whisperCount());
+        assertEquals(11, topic2.whisperCount());
+        assertEquals(10, topic3.whisperCount());
     }
 
 }

@@ -25,6 +25,9 @@ class JpaWhisperRepositoryAdapter implements WhisperRepository {
     @Autowired
     private JpaReplyRepository jpaReplyRepository;
 
+    @Autowired
+    private JpaTopicRepository jpaTopicRepository;
+
     @Override
     public Collection<Whisper> findMostRecent(int limit) {
         Pageable pageable = PageRequest.ofSize(limit).withSort(Sort.by("timestamp").descending());
@@ -95,5 +98,20 @@ class JpaWhisperRepositoryAdapter implements WhisperRepository {
         );
         this.jpaReplyRepository.save(reply);
         return reply.toReply();
+    }
+
+    @Override
+    public void updateTopic(UUID whisperId, String topic) {
+        var whisperJpa = this.jpaWhisperRepository.findById(whisperId)
+                .orElseThrow();
+        var topicJpa = this.jpaTopicRepository.findByTopic(topic)
+                .orElseGet(() -> {
+                    var newTopic = new JpaTopic();
+                    newTopic.setId(UUID.randomUUID());
+                    newTopic.setTopic(topic);
+                    return this.jpaTopicRepository.save(newTopic);
+                });
+        whisperJpa.setTopic(topicJpa);
+        this.jpaWhisperRepository.save(whisperJpa);
     }
 }

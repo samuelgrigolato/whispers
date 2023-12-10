@@ -30,7 +30,7 @@ class GetTrendingTopicsUseCaseTest {
 
         var expectedTopicResult = new TrendingTopicView(
                 "topic",
-                10L
+                10
         );
         assertEquals(expectedTopicResult, topicResult);
     }

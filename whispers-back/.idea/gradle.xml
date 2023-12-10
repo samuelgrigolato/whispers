@@ -17,6 +17,9 @@
             <option value="$PROJECT_DIR$/whispers-back-server1" />
             <option value="$PROJECT_DIR$/whispers-back-server2" />
             <option value="$PROJECT_DIR$/whispers-back-sns" />
+            <option value="$PROJECT_DIR$/whispers-back-sqs" />
+            <option value="$PROJECT_DIR$/whispers-back-worker1" />
+            <option value="$PROJECT_DIR$/whispers-back-worker2" />
           </set>
         </option>
       </GradleProjectSettings>

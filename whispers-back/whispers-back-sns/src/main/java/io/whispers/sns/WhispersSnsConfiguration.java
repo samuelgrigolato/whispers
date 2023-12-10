@@ -16,7 +16,7 @@ class WhispersSnsConfiguration {
 
     @Bean
     AmazonSNS amazonSns(@Value("${sns.endpoint}") String maybeEndpoint,
-                        @Value("${whisper-created.topic_name}") String whisperCreatedTopicName,
+                        @Value("${whisper_created.topic_name}") String whisperCreatedTopicName,
                         @Value("${aws.credentials.access_key_id}") String accessKeyId,
                         @Value("${aws.credentials.secret_access_key}") String secretAccessKey) {
         var builder = AmazonSNSClientBuilder.standard();
