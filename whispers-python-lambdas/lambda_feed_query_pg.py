@@ -18,19 +18,18 @@ def handler(event, context):
 
 
 def query_feed():
-    with psycopg2.connect(conn_str) as conn:
-        with conn.cursor() as cursor:
-            for i in range(int(os.environ[f'PG_QUERIES_PER_THREAD'])):
-                print(f"querying for the {i} time")
-                cursor.execute("""
-                    select id
-                    from whispers
-                    order by timestamp desc
-                    limit 10;
-                """)
-                results = cursor.fetchall()
-                for item in results:
-                    print(item[0])
+    with conn.cursor() as cursor:
+        for i in range(int(os.environ[f'PG_QUERIES_PER_THREAD'])):
+            print(f"querying for the {i} time")
+            cursor.execute("""
+                select id
+                from whispers
+                order by timestamp desc
+                limit 10;
+            """)
+            results = cursor.fetchall()
+            for item in results:
+                print(item[0])
 
 
 if __name__ == '__main__':
