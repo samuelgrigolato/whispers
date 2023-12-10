@@ -2,7 +2,11 @@
 
 set -e
 
-for i in $(seq 1 5); do
+# feed-query or whisper-generator
+LAMBDA=$1
+INVOCATIONS=$2
+
+for i in $(seq 1 $2); do
     AWS_PAGER= aws lambda invoke \
         --function-name "whispers-python-lambdas-$1" \
         --invocation-type "Event" \

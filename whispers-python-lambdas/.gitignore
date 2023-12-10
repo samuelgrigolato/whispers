@@ -3,3 +3,4 @@ packages
 nohup.out
 response.out
 lambda.zip
+*.pyc

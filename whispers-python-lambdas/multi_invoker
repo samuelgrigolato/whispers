@@ -2,7 +2,13 @@
 
 set -e
 
-for i in $(seq 1 10); do
-    echo $i
-    nohup ./invoker $1 &
+# feed-query or whisper-generator
+LAMBDA=$1
+INVOKER_PROCESSES=$2
+LAMBDA_INVOCATIONS_PER_INVOKER=$3
+
+rm -f nohup.out
+for i in $(seq 1 $2); do
+    echo "spawning invoker $i"
+    nohup ./invoker $1 $3 &
 done
