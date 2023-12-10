@@ -25,6 +25,7 @@ def query_feed():
                 cursor.execute("""
                     select id
                     from whispers
+                    order by timestamp desc
                     limit 10;
                 """)
                 results = cursor.fetchall()

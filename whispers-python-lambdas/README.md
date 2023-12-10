@@ -49,6 +49,42 @@ DYNAMODB_QUERIES_PER_THREAD=2 \
 python lambda_feed_query.py
 ```
 
+### Running lambda_whisper_generator.py Locally
+
+- Postgres, local:
+
+```
+STORAGE_TYPE=PG \
+PG_CONN_STR="dbname=whispers user=postgres password=123456 host=127.0.0.1" \
+PG_USERS=1 \
+PG_WHISPERS=4 \
+PG_WHISPERS_PER_BATCH=2 \
+python lambda_whisper_generator.py
+```
+
+- Postgres, RDS:
+
+Note: remember to check your IP address and update the security group accordingly.
+
+```
+STORAGE_TYPE=PG \
+PG_CONN_STR="dbname=whispers user=postgres password=postgres host=whispers-back-dev.cwzcsyyjtn0f.us-east-1.rds.amazonaws.com" \
+PG_USERS=2 \
+PG_WHISPERS=2 \
+PG_WHISPERS_PER_BATCH=2 \
+python lambda_whisper_generator.py
+```
+
+- DynamoDB, boto3:
+
+```
+STORAGE_TYPE=DYNAMODB \
+DYNAMODB_USERS=10 \
+DYNAMODB_WHISPERS=100 \
+DYNAMODB_GLOBAL_BUCKETS=10 \
+python lambda_whisper_generator.py
+```
+
 ### Invoking Lambdas
 
 - Single invocation:

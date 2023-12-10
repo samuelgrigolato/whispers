@@ -1,3 +1,4 @@
 psycopg2-binary
 boto3
 amazon-dax-client
+Faker

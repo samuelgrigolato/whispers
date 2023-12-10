@@ -97,3 +97,13 @@ databaseChangeLog:
                     foreignKeyName: fk_replies_whisper
                     referencedTableName: whispers
                     referencedColumnNames: id
+  - changeSet:
+      id: 5
+      author: samuel
+      changes:
+        - createIndex:
+            indexName: idx_whispers_timestamp
+            tableName: whispers
+            columns:
+              - column:
+                  name: timestamp
