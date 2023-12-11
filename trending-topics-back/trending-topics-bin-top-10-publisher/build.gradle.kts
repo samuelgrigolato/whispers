@@ -10,10 +10,10 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":trending-topics-back-lambda"))
-    implementation(project(":trending-topics-back-redis"))
-    implementation(project(":trending-topics-back-sns"))
-    implementation(project(":trending-topics-back-simple-resolver"))
+    implementation(project(":trending-topics-adapter-lambda"))
+    implementation(project(":trending-topics-adapter-redis"))
+    implementation(project(":trending-topics-adapter-sns"))
+    implementation(project(":trending-topics-adapter-simple-resolver"))
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 }

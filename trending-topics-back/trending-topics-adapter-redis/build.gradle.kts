@@ -10,9 +10,8 @@ repositories {
 }
 
 dependencies {
-    api(project(":trending-topics-back-app"))
-    api("software.amazon.lambda:powertools-batch:1.18.0")
-    api("com.amazonaws:aws-lambda-java-core:1.2.3")
+    implementation(project(":trending-topics-domain"))
+    api("org.redisson:redisson:3.25.0")
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 }

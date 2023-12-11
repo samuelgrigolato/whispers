@@ -10,10 +10,10 @@ repositories {
 }
 
 dependencies {
-    api(project(":trending-topics-back-domain"))
+    implementation(project(":trending-topics-domain"))
+    api("com.amazonaws:aws-java-sdk-sns:1.12.603")
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("org.mockito:mockito-core:5.+")
 }
 
 tasks.test {
