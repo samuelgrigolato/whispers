@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":whispers-back-domain"))
+    implementation(project(":whispers-domain"))
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     runtimeOnly("org.postgresql:postgresql")
     implementation("org.liquibase:liquibase-core")

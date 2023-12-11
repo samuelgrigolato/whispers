@@ -5,16 +5,16 @@ plugins {
 }
 
 group = "io.whispers"
-version = "unspecified"
+version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation(project(":whispers-back-api"))
-    implementation(project(":whispers-back-dynamo"))
-    implementation(project(":whispers-back-sns"))
+    implementation(project(":whispers-adapter-web"))
+    implementation(project(":whispers-adapter-jpa"))
+    implementation(project(":whispers-adapter-sns"))
     implementation("org.springframework.boot:spring-boot-starter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

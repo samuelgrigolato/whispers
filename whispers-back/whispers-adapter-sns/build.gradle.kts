@@ -12,12 +12,14 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":whispers-back-app"))
-    implementation("io.awspring.cloud:spring-cloud-aws-starter-sqs:3.0.3")
+    implementation("com.amazonaws:aws-java-sdk-sns:1.12.603")
     implementation("org.springframework.boot:spring-boot-starter")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    implementation(project(":whispers-domain"))
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.testcontainers:localstack")
 }
 
 dependencyManagement {
@@ -28,4 +30,8 @@ dependencyManagement {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+ext {
+    set("testcontainersVersion", "1.18.0")
 }

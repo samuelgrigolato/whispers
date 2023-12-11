@@ -12,8 +12,8 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":whispers-back-jpa"))
-    implementation(project(":whispers-back-sqs"))
+    implementation(project(":whispers-adapter-dynamo"))
+    implementation(project(":whispers-adapter-sqs"))
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-json")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

@@ -9,17 +9,17 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/whispers-back-api" />
-            <option value="$PROJECT_DIR$/whispers-back-app" />
-            <option value="$PROJECT_DIR$/whispers-back-domain" />
-            <option value="$PROJECT_DIR$/whispers-back-dynamo" />
-            <option value="$PROJECT_DIR$/whispers-back-jpa" />
-            <option value="$PROJECT_DIR$/whispers-back-server1" />
-            <option value="$PROJECT_DIR$/whispers-back-server2" />
-            <option value="$PROJECT_DIR$/whispers-back-sns" />
-            <option value="$PROJECT_DIR$/whispers-back-sqs" />
-            <option value="$PROJECT_DIR$/whispers-back-worker1" />
-            <option value="$PROJECT_DIR$/whispers-back-worker2" />
+            <option value="$PROJECT_DIR$/whispers-adapter-dynamo" />
+            <option value="$PROJECT_DIR$/whispers-adapter-jpa" />
+            <option value="$PROJECT_DIR$/whispers-adapter-sns" />
+            <option value="$PROJECT_DIR$/whispers-adapter-sqs" />
+            <option value="$PROJECT_DIR$/whispers-adapter-web" />
+            <option value="$PROJECT_DIR$/whispers-app" />
+            <option value="$PROJECT_DIR$/whispers-bin-web-dynamo" />
+            <option value="$PROJECT_DIR$/whispers-bin-web-jpa" />
+            <option value="$PROJECT_DIR$/whispers-bin-worker-dynamo" />
+            <option value="$PROJECT_DIR$/whispers-bin-worker-jpa" />
+            <option value="$PROJECT_DIR$/whispers-domain" />
           </set>
         </option>
       </GradleProjectSettings>

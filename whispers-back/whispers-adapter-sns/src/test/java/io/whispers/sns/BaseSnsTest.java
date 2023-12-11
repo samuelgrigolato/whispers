@@ -24,7 +24,8 @@ import static org.testcontainers.containers.localstack.LocalStackContainer.Servi
 @TestPropertySource(properties = {
         "aws.credentials.access_key_id=fakeAccessKeyId",
         "aws.credentials.secret_access_key=fakeSecretAccessKey",
-        "whisper_created.topic_arn=arn:aws:sns:us-east-1:000000000000:whisper-created"
+        "whisper_created.topic_arn=arn:aws:sns:us-east-1:000000000000:whisper-created",
+        "whisper_created.topic_name=whisper-created"
 })
 class BaseSnsTest {
 
