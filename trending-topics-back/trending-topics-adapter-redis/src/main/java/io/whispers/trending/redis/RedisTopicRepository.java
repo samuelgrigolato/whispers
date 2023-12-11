@@ -1,6 +1,6 @@
 package io.whispers.trending.redis;
 
-import io.whispers.trending.domain.TopicRepository;
+import io.whispers.trending.domain.TrendingTopicRepository;
 import io.whispers.trending.domain.TrendingTopic;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -13,10 +13,10 @@ import java.util.stream.Collectors;
 
 import static java.util.Map.Entry.comparingByValue;
 
-public class RedisTopicRepository implements TopicRepository {
-
+public class RedisTopicRepository implements TrendingTopicRepository {
     private static final int BUCKETS = 100;
     private static final int MINUTES = 3;
+
     private RedissonClient redisson;
 
     public RedisTopicRepository(RedissonClient redisson) {

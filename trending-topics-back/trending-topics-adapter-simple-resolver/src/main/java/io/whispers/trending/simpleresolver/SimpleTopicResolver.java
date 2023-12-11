@@ -11,6 +11,7 @@ public class SimpleTopicResolver implements TopicResolver {
 
     @Override
     public Optional<String> resolveTopic(String whisperText) {
+        // we could use a machine learning algorithm here to determine the topic
         var matcher = TOPIC_PATTERN.matcher(whisperText);
         if (matcher.find()) {
             return Optional.of(matcher.group(1));

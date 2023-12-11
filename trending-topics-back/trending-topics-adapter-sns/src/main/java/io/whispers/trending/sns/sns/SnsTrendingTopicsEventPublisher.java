@@ -4,7 +4,7 @@ import com.amazonaws.services.sns.AmazonSNS;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.whispers.trending.domain.TrendingTopic;
-import io.whispers.trending.domain.TrendingTopicsEventPublisher;
+import io.whispers.trending.domain.event.TrendingTopicsEventPublisher;
 
 import java.util.List;
 

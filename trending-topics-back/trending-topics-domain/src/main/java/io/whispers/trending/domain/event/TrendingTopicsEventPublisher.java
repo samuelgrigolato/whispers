@@ -1,4 +1,6 @@
-package io.whispers.trending.domain;
+package io.whispers.trending.domain.event;
+
+import io.whispers.trending.domain.TrendingTopic;
 
 import java.util.List;
 

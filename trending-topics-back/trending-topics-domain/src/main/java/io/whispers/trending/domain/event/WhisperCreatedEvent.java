@@ -1,4 +1,4 @@
-package io.whispers.trending.domain;
+package io.whispers.trending.domain.event;
 
 import java.util.UUID;
 

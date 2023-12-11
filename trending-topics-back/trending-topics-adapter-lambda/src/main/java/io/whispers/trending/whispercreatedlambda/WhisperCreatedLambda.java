@@ -1,13 +1,12 @@
 package io.whispers.trending.whispercreatedlambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.events.SNSEvent;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.whispers.trending.app.resolvetopics.ResolveTopicsUseCase;
-import io.whispers.trending.domain.WhisperCreatedEvent;
+import io.whispers.trending.domain.event.WhisperCreatedEvent;
 
 import java.util.HashMap;
 import java.util.stream.Collectors;

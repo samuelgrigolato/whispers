@@ -10,12 +10,12 @@ import com.amazonaws.services.sns.AmazonSNSClientBuilder;
 import com.amazonaws.services.sns.model.AuthorizationErrorException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.whispers.trending.app.resolvetopics.ResolveTopicsUseCase;
-import io.whispers.trending.domain.TopicEventPublisher;
-import io.whispers.trending.domain.TopicRepository;
+import io.whispers.trending.domain.TrendingTopicRepository;
 import io.whispers.trending.domain.TopicResolver;
+import io.whispers.trending.domain.event.TopicResolvedEventPublisher;
 import io.whispers.trending.redis.RedisTopicRepository;
 import io.whispers.trending.simpleresolver.SimpleTopicResolver;
-import io.whispers.trending.sns.sns.SnsTopicEventPublisher;
+import io.whispers.trending.sns.sns.SnsTopicResolvedEventPublisher;
 import io.whispers.trending.whispercreatedlambda.WhisperCreatedLambda;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
@@ -34,9 +34,9 @@ public class Handler {
     private final Properties configuration;
     private final ObjectMapper objectMapper;
     private final RedissonClient redisson;
-    private final TopicRepository topicRepository;
+    private final TrendingTopicRepository topicRepository;
     private final TopicResolver topicResolver;
-    private final TopicEventPublisher topicEventPublisher;
+    private final TopicResolvedEventPublisher topicResolvedEventPublisher;
 
     public Handler() throws IOException {
         this.configuration = loadConfiguration();
@@ -51,18 +51,18 @@ public class Handler {
         this.topicResolver = new SimpleTopicResolver();
 
         var topicResolvedTopicArn = this.configuration.getProperty("topic_resolved.topic_arn");
-        var amazonSns = buildAmazonSnsClient(topicResolvedTopicArn);
-        this.topicEventPublisher = new SnsTopicEventPublisher(amazonSns, this.objectMapper, topicResolvedTopicArn);
+        var amazonSns = buildAmazonSnsClient();
+        this.topicResolvedEventPublisher = new SnsTopicResolvedEventPublisher(amazonSns, this.objectMapper, topicResolvedTopicArn);
         System.out.println("Finished building Handler");
     }
 
     public void handleRequest(SQSEvent input, Context context) {
         System.out.println("Handling request");
-        var useCase = new ResolveTopicsUseCase(topicRepository, topicResolver, topicEventPublisher);
+        var useCase = new ResolveTopicsUseCase(topicRepository, topicResolver, topicResolvedEventPublisher);
         new WhisperCreatedLambda(objectMapper, useCase).handleRequest(input, context);
     }
 
-    private AmazonSNS buildAmazonSnsClient(String topicResolvedTopicArn) {
+    private AmazonSNS buildAmazonSnsClient() {
         System.out.println("Building Amazon SNS client");
         var builder = AmazonSNSClientBuilder.standard();
         var maybeEndpoint = this.configuration.getProperty("sns.endpoint", "");
