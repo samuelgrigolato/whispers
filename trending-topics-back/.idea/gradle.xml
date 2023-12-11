@@ -14,8 +14,8 @@
             <option value="$PROJECT_DIR$/trending-topics-adapter-simple-resolver" />
             <option value="$PROJECT_DIR$/trending-topics-adapter-sns" />
             <option value="$PROJECT_DIR$/trending-topics-app" />
-            <option value="$PROJECT_DIR$/trending-topics-bin-top-10-publisher" />
-            <option value="$PROJECT_DIR$/trending-topics-bin-whisper-created" />
+            <option value="$PROJECT_DIR$/trending-topics-bin-lambda-top10" />
+            <option value="$PROJECT_DIR$/trending-topics-bin-lambda-whisper-created" />
             <option value="$PROJECT_DIR$/trending-topics-domain" />
           </set>
         </option>
