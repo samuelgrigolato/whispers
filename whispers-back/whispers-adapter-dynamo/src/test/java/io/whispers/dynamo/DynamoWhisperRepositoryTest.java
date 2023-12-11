@@ -2,6 +2,7 @@ package io.whispers.dynamo;
 
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.ItemUtils;
+import com.amazonaws.services.dynamodbv2.model.GetItemResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.whispers.domain.model.*;
@@ -10,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.time.ZonedDateTime;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 import static org.junit.jupiter.api.Assertions.*;
@@ -101,6 +99,19 @@ public class DynamoWhisperRepositoryTest extends BaseDynamoTest {
         );
         assertEquals("text", result.text());
         assertEquals("user", result.sender().username());
+    }
+
+    @Test
+    void shouldUpdateTopic() {
+        this.dynamoWhisperRepository.updateTopic(
+                UUID.fromString("64050873-5b09-41f7-9d6d-41669917a3b9"),
+                "topicX"
+        );
+        GetItemResult item = this.dynamoDB.getItem(tableName, ItemUtils.fromSimpleMap(Map.of(
+                "pk", "whisper#64050873-5b09-41f7-9d6d-41669917a3b9",
+                "sk", "entry"
+        )), true);
+        assertEquals("topicX", item.getItem().get("topic").getS());
     }
 
     private void insertLatestWhispersFixtures() {

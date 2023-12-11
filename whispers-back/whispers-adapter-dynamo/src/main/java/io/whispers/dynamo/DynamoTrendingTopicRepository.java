@@ -57,7 +57,7 @@ public class DynamoTrendingTopicRepository extends BaseDynamoRepository implemen
                 Map.of(
                         "pk", "trending-topics",
                         "sk", paddedWhisperCount,
-                        "topic", trendingTopic.topic(),
+                        "topic", trendingTopic.topic().title(),
                         "whisperCount", trendingTopic.whisperCount()
                 )
         ));
