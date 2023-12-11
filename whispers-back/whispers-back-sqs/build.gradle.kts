@@ -20,6 +20,12 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
+dependencyManagement {
+    imports {
+        mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+    }
+}
+
 tasks.test {
     useJUnitPlatform()
 }
