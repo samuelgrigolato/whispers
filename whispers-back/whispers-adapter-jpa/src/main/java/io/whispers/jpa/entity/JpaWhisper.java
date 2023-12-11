@@ -60,7 +60,7 @@ public class JpaWhisper {
         return timestamp;
     }
 
-    JpaTopic getTopic() {
+    public JpaTopic getTopic() {
         return topic;
     }
 

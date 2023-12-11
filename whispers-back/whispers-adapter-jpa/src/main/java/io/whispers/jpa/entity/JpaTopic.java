@@ -24,7 +24,7 @@ public class JpaTopic {
         this.id = id;
     }
 
-    String getTopic() {
+    public String getTopic() {
         return topic;
     }
 

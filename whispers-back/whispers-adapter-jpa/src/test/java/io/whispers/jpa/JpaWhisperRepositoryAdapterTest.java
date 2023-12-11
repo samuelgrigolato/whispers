@@ -1,8 +1,7 @@
 package io.whispers.jpa;
 
-import io.whispers.domain.model.UnsavedReply;
-import io.whispers.domain.model.UnsavedWhisper;
-import io.whispers.domain.model.Whisper;
+import io.whispers.domain.model.*;
+import io.whispers.jpa.repository.JpaWhisperRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -20,6 +19,9 @@ class JpaWhisperRepositoryAdapterTest extends BaseJpaTest {
     @Autowired
     private JpaWhisperRepositoryAdapter jpaWhisperRepositoryAdapter;
 
+    @Autowired
+    private JpaWhisperRepository jpaWhisperRepository;
+
     @Test
     @Sql("JpaWhisperRepositoryAdapterTest_shouldReturnLatestWhispers.sql")
     void shouldReturnLatestWhispers() {
@@ -33,13 +35,13 @@ class JpaWhisperRepositoryAdapterTest extends BaseJpaTest {
 
         var obtainedWhisper2 = iterator.next();
         assertEquals(UUID.fromString("d1e99baf-6fde-44e2-88a7-a4a7d94ae3ef"), obtainedWhisper2.id());
-        assertEquals("user", obtainedWhisper2.sender());
+        assertEquals("user", obtainedWhisper2.sender().username());
         assertEquals("text1", obtainedWhisper2.text());
-        assertEquals(Optional.of("topic1"), obtainedWhisper2.topic());
+        assertEquals(Optional.of("topic1"), obtainedWhisper2.topic().map(Topic::title));
         assertEquals(1, obtainedWhisper2.replies().size());
 
         var obtainedReply = obtainedWhisper2.replies().iterator().next();
-        assertEquals("user2", obtainedReply.sender());
+        assertEquals("user2", obtainedReply.sender().username());
         assertEquals("replyText", obtainedReply.text());
     }
 
@@ -67,25 +69,40 @@ class JpaWhisperRepositoryAdapterTest extends BaseJpaTest {
     @Sql("JpaWhisperRepositoryAdapterTest_shouldCreate.sql")
     void shouldCreate() {
         var result = this.jpaWhisperRepositoryAdapter.create(new UnsavedWhisper(
-                "text",
-                "user"
+                new User("user"),
+                "text"
         ));
         assertNotNull(result.id());
         assertEquals("text", result.text());
-        assertEquals("user", result.sender());
+        assertEquals("user", result.sender().username());
         assertTrue(result.topic().isEmpty());
     }
 
     @Test
     @Sql("JpaWhisperRepositoryAdapterTest_shouldCreateReply.sql")
     void shouldCreateReply() {
-        var result = this.jpaWhisperRepositoryAdapter.createReply(new UnsavedReply(
-                "text",
-                "user",
-                UUID.fromString("64050873-5b09-41f7-9d6d-41669917a3b9")
-        ));
+        var result = this.jpaWhisperRepositoryAdapter.createReply(
+                UUID.fromString("64050873-5b09-41f7-9d6d-41669917a3b9"),
+                new UnsavedReply(
+                    new User("user"),
+                    "text"
+                )
+        );
         assertEquals("text", result.text());
-        assertEquals("user", result.sender());
+        assertEquals("user", result.sender().username());
+    }
+
+    @Test
+    @Sql("JpaWhisperRepositoryAdapterTest_shouldUpdateTopic.sql")
+    void shouldUpdateTopic() {
+        this.jpaWhisperRepositoryAdapter.updateTopic(
+                UUID.fromString("d1e99baf-6fde-44e2-88a7-a4a7d94ae3ef"),
+                "topicX"
+        );
+        var result = this.jpaWhisperRepository
+                .findById(UUID.fromString("d1e99baf-6fde-44e2-88a7-a4a7d94ae3ef"))
+                .orElseThrow();
+        assertEquals("topicX", result.getTopic().getTopic());
     }
 
 }
