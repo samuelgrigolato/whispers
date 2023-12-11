@@ -10,10 +10,10 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ContextConfiguration(classes = DynamoTrendingTopicRepository.class)
-public class DynamoTopicRepositoryTest extends BaseDynamoTest {
+public class DynamoTrendingTopicRepositoryTest extends BaseDynamoTest {
 
     @Autowired
-    private DynamoTrendingTopicRepository dynamoTopicRepository;
+    private DynamoTrendingTopicRepository dynamoTrendingTopicRepository;
 
     @Test
     void shouldQueryTrendingTopics() {
@@ -28,15 +28,15 @@ public class DynamoTopicRepositoryTest extends BaseDynamoTest {
             )));
         }
 
-        var result = this.dynamoTopicRepository.getTrending();
+        var result = this.dynamoTrendingTopicRepository.findAll();
         assertEquals(10, result.size());
         var iterator = result.iterator();
         var topic1 = iterator.next();
         var topic2 = iterator.next();
         var topic3 = iterator.next();
-        assertEquals("topic12", topic1.topic());
-        assertEquals("topic11", topic2.topic());
-        assertEquals("topic10", topic3.topic());
+        assertEquals("topic12", topic1.topic().title());
+        assertEquals("topic11", topic2.topic().title());
+        assertEquals("topic10", topic3.topic().title());
         assertEquals(12, topic1.whisperCount());
         assertEquals(11, topic2.whisperCount());
         assertEquals(10, topic3.whisperCount());

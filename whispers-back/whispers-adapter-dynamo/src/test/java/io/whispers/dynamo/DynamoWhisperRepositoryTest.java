@@ -4,10 +4,7 @@ import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.ItemUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.whispers.domain.model.Reply;
-import io.whispers.domain.model.UnsavedReply;
-import io.whispers.domain.model.UnsavedWhisper;
-import io.whispers.domain.model.Whisper;
+import io.whispers.domain.model.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -45,13 +42,13 @@ public class DynamoWhisperRepositoryTest extends BaseDynamoTest {
 
         var obtainedWhisper2 = iterator.next();
         assertEquals(UUID.fromString("d1e99baf-6fde-44e2-88a7-a4a7d94ae3ef"), obtainedWhisper2.id());
-        assertEquals("user", obtainedWhisper2.sender());
+        assertEquals("user", obtainedWhisper2.sender().username());
         assertEquals("text1", obtainedWhisper2.text());
-        assertEquals(Optional.of("topic1"), obtainedWhisper2.topic());
+        assertEquals(Optional.of("topic1"), obtainedWhisper2.topic().map(Topic::title));
         assertEquals(1, obtainedWhisper2.replies().size());
 
         var obtainedReply = obtainedWhisper2.replies().iterator().next();
-        assertEquals("user2", obtainedReply.sender());
+        assertEquals("user2", obtainedReply.sender().username());
         assertEquals("replyText", obtainedReply.text());
     }
 
@@ -78,12 +75,12 @@ public class DynamoWhisperRepositoryTest extends BaseDynamoTest {
     @Test
     void shouldCreate() {
         var result = this.dynamoWhisperRepository.create(new UnsavedWhisper(
-                "text",
-                "user"
+                new User("user"),
+                "text"
         ));
         assertNotNull(result.id());
         assertEquals("text", result.text());
-        assertEquals("user", result.sender());
+        assertEquals("user", result.sender().username());
         assertTrue(result.topic().isEmpty());
     }
 
@@ -95,13 +92,15 @@ public class DynamoWhisperRepositoryTest extends BaseDynamoTest {
                 ZonedDateTime.parse("2000-01-01T10:32:00Z"),
                 List.of()
         );
-        var result = this.dynamoWhisperRepository.createReply(new UnsavedReply(
-                "text",
-                "user",
-                UUID.fromString("64050873-5b09-41f7-9d6d-41669917a3b9")
-        ));
+        var result = this.dynamoWhisperRepository.createReply(
+                UUID.fromString("64050873-5b09-41f7-9d6d-41669917a3b9"),
+                new UnsavedReply(
+                    new User("user"),
+                    "text"
+                )
+        );
         assertEquals("text", result.text());
-        assertEquals("user", result.sender());
+        assertEquals("user", result.sender().username());
     }
 
     private void insertLatestWhispersFixtures() {
@@ -110,7 +109,7 @@ public class DynamoWhisperRepositoryTest extends BaseDynamoTest {
                 "user", "text1", "topic1",
                 ZonedDateTime.parse("2000-01-01T10:30:00Z"),
                 List.of(new Reply(
-                        "user2",
+                        new User("user2"),
                         ZonedDateTime.parse("2000-01-01T10:31:00Z"),
                         "replyText"
                 ))
