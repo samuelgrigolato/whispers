@@ -14,11 +14,13 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 
 @Repository
 public class DynamoWhisperRepository extends BaseDynamoRepository implements WhisperRepository {
+    private static final int GLOBAL_WHISPERS_SHARDS = 10;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -55,10 +57,39 @@ public class DynamoWhisperRepository extends BaseDynamoRepository implements Whi
 
     @Override
     public Collection<Whisper> findMostRecent(int limit) {
+        // debatable if we should be creating a new thread pool everytime
+        try (var executorService = Executors.newFixedThreadPool(GLOBAL_WHISPERS_SHARDS)) {
+            var tasks = buildShardedGlobalMostRecentQueryTasks(limit);
+            var futures = executorService.invokeAll(tasks);
+            var allItems = futures.stream()
+                    .flatMap(this::waitForFutureResult)
+                    .sorted(Comparator.comparing(item -> item.get("gsi1Sk").getS(), Comparator.reverseOrder()))
+                    .map(this::toKeyAttributes)
+                    .collect(Collectors.toList());
+            return batchGetWhispers(new QueryResult()
+                    .withItems(allItems.subList(0, Math.min(allItems.size(), 10))));
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-        var executorService = Executors.newCachedThreadPool();
+    private Map<String, AttributeValue> toKeyAttributes(Map<String, AttributeValue> item) {
+        return Map.of(
+                "pk", item.get("pk"),
+                "sk", item.get("sk"));
+    }
+
+    private Stream<Map<String, AttributeValue>> waitForFutureResult(Future<QueryResult> future) {
+        try {
+            return future.get().getItems().stream();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("Unable to get shard results.", e);
+        }
+    }
+
+    private ArrayList<Callable<QueryResult>> buildShardedGlobalMostRecentQueryTasks(int limit) {
         var tasks = new ArrayList<Callable<QueryResult>>();
-        for (var i = 0; i < 10; i++) {
+        for (var i = 0; i < GLOBAL_WHISPERS_SHARDS; i++) {
             var thisI = i;
             tasks.add(() -> dynamoDB.query(new QueryRequest()
                     .withTableName(getTableName())
@@ -70,28 +101,7 @@ public class DynamoWhisperRepository extends BaseDynamoRepository implements Whi
                     .withScanIndexForward(false)
                     .withLimit(limit)));
         }
-        try {
-            var futures = executorService.invokeAll(tasks);
-            executorService.close();
-            var allItems = futures.stream()
-                    .flatMap(future -> {
-                        try {
-                            return future.get().getItems().stream();
-                        } catch (InterruptedException | ExecutionException e) {
-                            throw new RuntimeException(e);
-                        }
-                    })
-                    .sorted(Comparator.comparing(item -> item.get("gsi1Sk").getS(), Comparator.reverseOrder()))
-                    .map(item -> Map.of(
-                            "pk", item.get("pk"),
-                            "sk", item.get("sk")))
-                    .collect(Collectors.toList());
-            return batchGetWhispers(new QueryResult()
-                    .withItems(allItems.subList(0, Math.min(allItems.size(), 10))));
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
+        return tasks;
     }
 
     private List<Whisper> batchGetWhispers(QueryResult result) {
@@ -126,7 +136,7 @@ public class DynamoWhisperRepository extends BaseDynamoRepository implements Whi
             var item = new Item()
                     .withString("pk", "whisper#" + whisperUuid)
                     .withString("sk", "entry")
-                    .withString("gsi1Pk", "global" + (Math.abs(whisperUuid.hashCode()) % 10))
+                    .withString("gsi1Pk", "global" + (Math.abs(whisperUuid.hashCode()) % GLOBAL_WHISPERS_SHARDS))
                     .withString("gsi1Sk", suffixedFormattedTimestamp)
                     .withString("gsi2Sk", suffixedFormattedTimestamp)
                     .withString("gsi3Pk", data.sender().username())
