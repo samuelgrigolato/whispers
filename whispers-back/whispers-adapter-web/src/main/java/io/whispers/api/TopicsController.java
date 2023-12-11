@@ -2,8 +2,8 @@ package io.whispers.api;
 
 import io.whispers.app.gettrendingtopics.GetTrendingTopicsUseCase;
 import io.whispers.app.gettrendingtopics.GetTrendingTopicsUseCaseResponse;
-import io.whispers.app.gettrendingtopics.TrendingTopicView;
-import io.whispers.domain.TopicRepository;
+import io.whispers.app.gettrendingtopics.TrendingTopicOutput;
+import io.whispers.domain.repository.TrendingTopicRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,10 +14,10 @@ import java.util.Collection;
 class TopicsController {
 
     @Autowired
-    private TopicRepository topicRepository;
+    private TrendingTopicRepository topicRepository;
 
     @GetMapping(path = "/trending")
-    Collection<TrendingTopicView> getTrending() {
+    Collection<TrendingTopicOutput> getTrending() {
         GetTrendingTopicsUseCase useCase = new GetTrendingTopicsUseCase(this.topicRepository);
         GetTrendingTopicsUseCaseResponse response = useCase.execute();
         return response.trendingTopics();

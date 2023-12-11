@@ -1,26 +1,21 @@
 package io.whispers.app.postreply;
 
-import io.whispers.domain.*;
+import io.whispers.domain.model.Reply;
+import io.whispers.domain.repository.WhisperRepository;
 
 public class PostReplyUseCase {
 
     private WhisperRepository whisperRepository;
 
-    private UserRepository userRepository;
-
-    public PostReplyUseCase(WhisperRepository whisperRepository,
-                            UserRepository userRepository) {
+    public PostReplyUseCase(WhisperRepository whisperRepository) {
         this.whisperRepository = whisperRepository;
-        this.userRepository = userRepository;
     }
 
     public PostReplyResponse execute(PostReplyRequest request) {
-        this.userRepository.createIfNotExists(request.sender());
-        Reply reply = this.whisperRepository.createReply(new ReplyRequest(
-                request.text(),
-                request.sender(),
-                request.replyingTo()
-        ));
+        Reply reply = this.whisperRepository.createReply(
+                request.replyingTo(),
+                request.reply()
+        );
         return PostReplyResponse.from(reply);
     }
 

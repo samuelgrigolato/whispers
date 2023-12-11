@@ -1,6 +1,8 @@
 package io.whispers.app.postreply;
 
-import io.whispers.domain.*;
+import io.whispers.domain.model.Reply;
+import io.whispers.domain.model.UnsavedReply;
+import io.whispers.domain.repository.WhisperRepository;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZoneId;
@@ -21,7 +23,7 @@ class PostReplyUseCaseTest {
         );
 
         var whisperRepositoryMock = mock(WhisperRepository.class);
-        var createReplyData = new ReplyRequest(
+        var createReplyData = new UnsavedReply(
                 "text",
                 "sender",
                 UUID.fromString("530bbffb-455b-42e7-9759-23e508e89f03")

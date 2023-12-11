@@ -1,32 +1,27 @@
 package io.whispers.app.postwhisper;
 
-import io.whispers.domain.*;
+import io.whispers.domain.event.WhisperCreatedEvent;
+import io.whispers.domain.event.WhisperCreatedEventPublisher;
+import io.whispers.domain.model.Whisper;
+import io.whispers.domain.repository.WhisperRepository;
 
 public class PostWhisperUseCase {
 
     private WhisperRepository whisperRepository;
 
-    private UserRepository userRepository;
-
-    private WhisperEventPublisher whisperEventPublisher;
+    private WhisperCreatedEventPublisher whisperCreatedEventPublisher;
 
     public PostWhisperUseCase(WhisperRepository whisperRepository,
-                              UserRepository userRepository,
-                              WhisperEventPublisher whisperEventPublisher) {
+                              WhisperCreatedEventPublisher whisperCreatedEventPublisher) {
         this.whisperRepository = whisperRepository;
-        this.userRepository = userRepository;
-        this.whisperEventPublisher = whisperEventPublisher;
+        this.whisperCreatedEventPublisher = whisperCreatedEventPublisher;
     }
 
     public PostWhisperResponse execute(PostWhisperRequest request) {
-        this.userRepository.createIfNotExists(request.sender());
-        Whisper whisper = this.whisperRepository.create(new WhisperCreationRequest(
-                request.text(),
-                request.sender()
-        ));
-        this.whisperEventPublisher.publish(new WhisperCreatedEvent(
+        Whisper whisper = this.whisperRepository.create(request.whisper());
+        this.whisperCreatedEventPublisher.publish(new WhisperCreatedEvent(
                 whisper.id(),
-                whisper.sender(),
+                whisper.sender().username(),
                 whisper.text(),
                 whisper.timestamp()
         ));

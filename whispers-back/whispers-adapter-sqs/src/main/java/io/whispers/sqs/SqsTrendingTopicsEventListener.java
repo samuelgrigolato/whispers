@@ -5,14 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.awspring.cloud.sqs.annotation.SqsListener;
 import io.whispers.app.updatetrendingtopics.UpdateTrendingTopicsRequest;
 import io.whispers.app.updatetrendingtopics.UpdateTrendingTopicsUseCase;
-import io.whispers.domain.TopicRepository;
-import io.whispers.domain.TopicResolutionEvent;
-import io.whispers.domain.TrendingTopic;
+import io.whispers.domain.repository.TrendingTopicRepository;
+import io.whispers.domain.model.TrendingTopic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Component
 public class SqsTrendingTopicsEventListener {
@@ -21,7 +19,7 @@ public class SqsTrendingTopicsEventListener {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private TopicRepository topicRepository;
+    private TrendingTopicRepository topicRepository;
 
     @SqsListener(value = "${trending_topics.queue_name}")
     void onTrendingTopics(SnsNotification snsNotification) {

@@ -1,24 +1,16 @@
 package io.whispers.app.updatetrendingtopics;
 
-import io.whispers.domain.TopicRepository;
-import io.whispers.domain.TrendingTopic;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import io.whispers.domain.repository.TrendingTopicRepository;
 
 public class UpdateTrendingTopicsUseCase {
 
-    private TopicRepository topicRepository;
+    private TrendingTopicRepository trendingTopicRepository;
 
-    public UpdateTrendingTopicsUseCase(TopicRepository topicRepository) {
-        this.topicRepository = topicRepository;
+    public UpdateTrendingTopicsUseCase(TrendingTopicRepository trendingTopicRepository) {
+        this.trendingTopicRepository = trendingTopicRepository;
     }
 
     public void execute(UpdateTrendingTopicsRequest request) {
-        List<TrendingTopic> trendingTopics = request.trendingTopics();
-        for (var trendingTopic : trendingTopics) {
-            this.topicRepository.saveTrendingTopic(trendingTopic);
-        }
-        this.topicRepository.deleteAllTrendingTopicsExcept(trendingTopics);
+        this.trendingTopicRepository.replaceAllWith(request.trendingTopics());
     }
 }

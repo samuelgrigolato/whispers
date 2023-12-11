@@ -5,9 +5,11 @@ import io.whispers.app.postreply.PostReplyRequest;
 import io.whispers.app.postreply.PostReplyUseCase;
 import io.whispers.app.postwhisper.PostWhisperRequest;
 import io.whispers.app.postwhisper.PostWhisperUseCase;
-import io.whispers.domain.UserRepository;
-import io.whispers.domain.WhisperEventPublisher;
-import io.whispers.domain.WhisperRepository;
+import io.whispers.domain.event.WhisperCreatedEventPublisher;
+import io.whispers.domain.model.UnsavedReply;
+import io.whispers.domain.model.UnsavedWhisper;
+import io.whispers.domain.model.User;
+import io.whispers.domain.repository.WhisperRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,26 +24,23 @@ class WhispersController {
     private WhisperRepository whisperRepository;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private WhisperEventPublisher whisperEventPublisher;
+    private WhisperCreatedEventPublisher whisperEventPublisher;
 
     @GetMapping(path = "")
-    Collection<RecentWhisperView> get(@RequestParam("topic") Optional<String> topic) {
+    Collection<RecentWhisperOutput> get(@RequestParam("topic") Optional<String> topic) {
         GetMostRecentWhispersUseCase useCase = new GetMostRecentWhispersUseCase(this.whisperRepository);
         GetMostRecentWhispersResponse response = useCase.execute(new GetMostRecentWhispersRequest(
-                topic.map(MostRecentFilterByTopic::new)
+                topic.<MostRecentFilter>map(MostRecentFilterByTopic::new).orElse(new MostRecentFilterAll())
         ));
         return response.whispers();
     }
 
     @GetMapping(path = "/mine")
-    Collection<RecentWhisperView> getMine(@RequestHeader("Authorization") String authorization) {
+    Collection<RecentWhisperOutput> getMine(@RequestHeader("Authorization") String authorization) {
         String sender = authorization.substring("Bearer ".length());
         GetMostRecentWhispersUseCase useCase = new GetMostRecentWhispersUseCase(this.whisperRepository);
         GetMostRecentWhispersResponse response = useCase.execute(new GetMostRecentWhispersRequest(
-                Optional.of(new MostRecentFilterBySender(sender))
+                new MostRecentFilterBySender(sender)
         ));
         return response.whispers();
     }
@@ -52,19 +51,16 @@ class WhispersController {
         if (body.replyingTo().isEmpty()) {
             PostWhisperUseCase useCase = new PostWhisperUseCase(
                     this.whisperRepository,
-                    this.userRepository,
                     this.whisperEventPublisher);
-            return useCase.execute(new PostWhisperRequest(
-                    sender,
+            return useCase.execute(new PostWhisperRequest(new UnsavedWhisper(
+                    new User(sender),
                     body.text()
-            ));
+            )));
         } else {
             PostReplyUseCase useCase = new PostReplyUseCase(
-                    this.whisperRepository,
-                    this.userRepository);
+                    this.whisperRepository);
             return useCase.execute(new PostReplyRequest(
-                    sender,
-                    body.text(),
+                    new UnsavedReply(new User(sender), body.text()),
                     body.replyingTo().get()
             ));
         }

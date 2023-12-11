@@ -9,11 +9,11 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ContextConfiguration(classes = DynamoTopicRepository.class)
+@ContextConfiguration(classes = DynamoTrendingTopicRepository.class)
 public class DynamoTopicRepositoryTest extends BaseDynamoTest {
 
     @Autowired
-    private DynamoTopicRepository dynamoTopicRepository;
+    private DynamoTrendingTopicRepository dynamoTopicRepository;
 
     @Test
     void shouldQueryTrendingTopics() {

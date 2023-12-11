@@ -4,10 +4,10 @@ import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.ItemUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.whispers.domain.Reply;
-import io.whispers.domain.ReplyRequest;
-import io.whispers.domain.WhisperCreationRequest;
-import io.whispers.domain.Whisper;
+import io.whispers.domain.model.Reply;
+import io.whispers.domain.model.UnsavedReply;
+import io.whispers.domain.model.UnsavedWhisper;
+import io.whispers.domain.model.Whisper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -77,7 +77,7 @@ public class DynamoWhisperRepositoryTest extends BaseDynamoTest {
 
     @Test
     void shouldCreate() {
-        var result = this.dynamoWhisperRepository.create(new WhisperCreationRequest(
+        var result = this.dynamoWhisperRepository.create(new UnsavedWhisper(
                 "text",
                 "user"
         ));
@@ -95,7 +95,7 @@ public class DynamoWhisperRepositoryTest extends BaseDynamoTest {
                 ZonedDateTime.parse("2000-01-01T10:32:00Z"),
                 List.of()
         );
-        var result = this.dynamoWhisperRepository.createReply(new ReplyRequest(
+        var result = this.dynamoWhisperRepository.createReply(new UnsavedReply(
                 "text",
                 "user",
                 UUID.fromString("64050873-5b09-41f7-9d6d-41669917a3b9")

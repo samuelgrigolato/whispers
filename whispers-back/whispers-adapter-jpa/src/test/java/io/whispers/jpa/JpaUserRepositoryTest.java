@@ -1,5 +1,6 @@
 package io.whispers.jpa;
 
+import io.whispers.jpa.repository.JpaUserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;

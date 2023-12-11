@@ -1,6 +1,6 @@
 package io.whispers.sns;
 
-import io.whispers.domain.WhisperCreatedEvent;
+import io.whispers.domain.event.WhisperCreatedEvent;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;

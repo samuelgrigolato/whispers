@@ -1,10 +1,9 @@
 package io.whispers.app.getmostrecentwhispers;
 
-import io.whispers.domain.Whisper;
-import io.whispers.domain.WhisperRepository;
+import io.whispers.domain.model.Whisper;
+import io.whispers.domain.repository.WhisperRepository;
 
 import java.util.Collection;
-import java.util.Optional;
 
 public class GetMostRecentWhispersUseCase {
     private static final int LIMIT = 10;
@@ -17,21 +16,17 @@ public class GetMostRecentWhispersUseCase {
 
     public GetMostRecentWhispersResponse execute(GetMostRecentWhispersRequest request) {
         Collection<Whisper> mostRecent;
-        Optional<MostRecentFilter> maybeFilter = request.filter();
-        if (maybeFilter.isPresent()) {
-            MostRecentFilter filter = maybeFilter.get();
-            if (filter instanceof MostRecentFilterBySender senderFilter) {
-                mostRecent = this.whisperRepository.findMostRecentBySender(senderFilter.sender(), LIMIT);
-            } else if (filter instanceof MostRecentFilterByTopic topicFilter) {
-                mostRecent = this.whisperRepository.findMostRecentByTopic(topicFilter.topic(), LIMIT);
-            } else {
-                throw new IllegalArgumentException("Unknown filter type: " + filter.getClass().getName());
-            }
-        } else {
-            mostRecent = this.whisperRepository.findMostRecent(LIMIT);
+        switch (request.filter()) {
+            case MostRecentFilterBySender filterBySender ->
+                    mostRecent = this.whisperRepository.findMostRecentBySender(filterBySender.sender(), LIMIT);
+            case MostRecentFilterByTopic filterByTopic ->
+                    mostRecent = this.whisperRepository.findMostRecentByTopic(filterByTopic.topic(), LIMIT);
+            case MostRecentFilterAll ignored ->
+                    mostRecent = this.whisperRepository.findMostRecent(LIMIT);
+            default -> throw new IllegalArgumentException("Unknown filter type: " + request.filter().getClass().getName());
         }
         var whispers = mostRecent.stream()
-                .map(RecentWhisperView::from)
+                .map(RecentWhisperOutput::from)
                 .toList();
         return new GetMostRecentWhispersResponse(whispers);
     }

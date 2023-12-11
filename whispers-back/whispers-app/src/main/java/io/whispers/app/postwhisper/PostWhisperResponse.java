@@ -1,7 +1,7 @@
 package io.whispers.app.postwhisper;
 
-import io.whispers.app.getmostrecentwhispers.RecentReplyView;
-import io.whispers.domain.Whisper;
+import io.whispers.domain.model.Topic;
+import io.whispers.domain.model.Whisper;
 
 import java.time.ZonedDateTime;
 import java.util.Collection;
@@ -15,7 +15,7 @@ public record PostWhisperResponse(
         ZonedDateTime timestamp,
         String text,
         Optional<String> topic,
-        Collection<RecentReplyView> replies
+        Collection<Void> replies
 ) {
     static PostWhisperResponse from(Whisper whisper) {
         if (!whisper.replies().isEmpty()) {
@@ -23,10 +23,10 @@ public record PostWhisperResponse(
         }
         return new PostWhisperResponse(
                 whisper.id(),
-                whisper.sender(),
+                whisper.sender().username(),
                 whisper.timestamp(),
                 whisper.text(),
-                whisper.topic(),
+                whisper.topic().map(Topic::title),
                 Collections.emptyList()
         );
     }

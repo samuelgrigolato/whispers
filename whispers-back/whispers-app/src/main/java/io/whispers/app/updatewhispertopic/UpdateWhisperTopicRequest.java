@@ -1,8 +1,8 @@
 package io.whispers.app.updatewhispertopic;
 
-import io.whispers.domain.TopicResolutionEvent;
+import io.whispers.domain.event.TopicResolvedEvent;
 
 public record UpdateWhisperTopicRequest(
-        TopicResolutionEvent event
+        TopicResolvedEvent event
 ) {
 }

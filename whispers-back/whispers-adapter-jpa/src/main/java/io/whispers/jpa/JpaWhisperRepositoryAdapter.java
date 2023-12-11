@@ -1,6 +1,18 @@
 package io.whispers.jpa;
 
-import io.whispers.domain.*;
+import io.whispers.domain.model.Reply;
+import io.whispers.domain.model.UnsavedReply;
+import io.whispers.domain.model.Whisper;
+import io.whispers.domain.model.UnsavedWhisper;
+import io.whispers.domain.repository.WhisperRepository;
+import io.whispers.jpa.entity.JpaReply;
+import io.whispers.jpa.entity.JpaTopic;
+import io.whispers.jpa.entity.JpaUser;
+import io.whispers.jpa.entity.JpaWhisper;
+import io.whispers.jpa.repository.JpaReplyRepository;
+import io.whispers.jpa.repository.JpaTopicRepository;
+import io.whispers.jpa.repository.JpaUserRepository;
+import io.whispers.jpa.repository.JpaWhisperRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
@@ -64,11 +76,8 @@ class JpaWhisperRepositoryAdapter implements WhisperRepository {
     }
 
     @Override
-    public Whisper create(WhisperCreationRequest data) {
-        var sender = this.jpaUserRepository.findByUsername(data.sender());
-        if (sender == null) {
-            throw new IllegalArgumentException("sender not found");
-        }
+    public Whisper create(UnsavedWhisper data) {
+        var sender = this.findOrCreateUser(data.sender().username());
         var whisper = new JpaWhisper(
                 UUID.randomUUID(),
                 sender,
@@ -82,12 +91,9 @@ class JpaWhisperRepositoryAdapter implements WhisperRepository {
     }
 
     @Override
-    public Reply createReply(ReplyRequest data) {
-        var sender = this.jpaUserRepository.findByUsername(data.sender());
-        if (sender == null) {
-            throw new IllegalArgumentException("sender not found");
-        }
-        var whisper = this.jpaWhisperRepository.findById(data.replyingTo())
+    public Reply createReply(UUID replyingTo, UnsavedReply data) {
+        var sender = this.findOrCreateUser(data.sender().username());
+        var whisper = this.jpaWhisperRepository.findById(replyingTo)
                 .orElseThrow();
         var reply = new JpaReply(
                 UUID.randomUUID(),
@@ -98,6 +104,16 @@ class JpaWhisperRepositoryAdapter implements WhisperRepository {
         );
         this.jpaReplyRepository.save(reply);
         return reply.toReply();
+    }
+
+    private JpaUser findOrCreateUser(String username) {
+        return this.jpaUserRepository.findByUsername(username)
+                .orElseGet(() -> {
+                    var newUser = new JpaUser();
+                    newUser.setId(UUID.randomUUID());
+                    newUser.setUsername(username);
+                    return this.jpaUserRepository.save(newUser);
+                });
     }
 
     @Override

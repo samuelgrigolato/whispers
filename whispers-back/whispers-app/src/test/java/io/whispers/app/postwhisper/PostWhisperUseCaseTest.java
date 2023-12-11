@@ -1,6 +1,10 @@
 package io.whispers.app.postwhisper;
 
-import io.whispers.domain.*;
+import io.whispers.domain.event.WhisperCreatedEvent;
+import io.whispers.domain.event.WhisperCreatedEventPublisher;
+import io.whispers.domain.model.Whisper;
+import io.whispers.domain.model.UnsavedWhisper;
+import io.whispers.domain.repository.WhisperRepository;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZoneId;
@@ -26,11 +30,11 @@ class PostWhisperUseCaseTest {
         );
 
         var whisperRepositoryMock = mock(WhisperRepository.class);
-        when(whisperRepositoryMock.create(new WhisperCreationRequest("text", "sender")))
+        when(whisperRepositoryMock.create(new UnsavedWhisper("text", "sender")))
                 .thenReturn(whisper);
 
         var userRepositoryMock = mock(UserRepository.class);
-        var whisperEventPublisherMock = mock(WhisperEventPublisher.class);
+        var whisperEventPublisherMock = mock(WhisperCreatedEventPublisher.class);
 
         var subject = new PostWhisperUseCase(whisperRepositoryMock, userRepositoryMock, whisperEventPublisherMock);
 

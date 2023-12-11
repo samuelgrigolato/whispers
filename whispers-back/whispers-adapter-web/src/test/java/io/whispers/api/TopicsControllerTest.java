@@ -1,6 +1,7 @@
 package io.whispers.api;
 
-import io.whispers.domain.*;
+import io.whispers.domain.model.TrendingTopic;
+import io.whispers.domain.repository.TrendingTopicRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -24,7 +25,7 @@ class TopicsControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private TopicRepository topicRepository;
+    private TrendingTopicRepository topicRepository;
 
     @Test
     void shouldReturnEmptyResponse() throws Exception {

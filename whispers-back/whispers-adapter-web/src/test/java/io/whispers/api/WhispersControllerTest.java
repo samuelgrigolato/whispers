@@ -1,6 +1,11 @@
 package io.whispers.api;
 
-import io.whispers.domain.*;
+import io.whispers.domain.event.WhisperCreatedEventPublisher;
+import io.whispers.domain.model.Reply;
+import io.whispers.domain.model.UnsavedReply;
+import io.whispers.domain.model.Whisper;
+import io.whispers.domain.model.UnsavedWhisper;
+import io.whispers.domain.repository.WhisperRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -33,7 +38,7 @@ class WhispersControllerTest {
     private UserRepository userRepository;
 
     @MockBean
-    private WhisperEventPublisher whisperEventPublisher;
+    private WhisperCreatedEventPublisher whisperEventPublisher;
 
     @Test
     void shouldReturnEmptyResponse() throws Exception {
@@ -129,7 +134,7 @@ class WhispersControllerTest {
                 Optional.empty(),
                 Collections.emptyList()
         );
-        when(this.whisperRepository.create(new WhisperCreationRequest("text", "sender")))
+        when(this.whisperRepository.create(new UnsavedWhisper("text", "sender")))
                 .thenReturn(whisper);
         this.mockMvc.perform(post("/whispers")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -159,7 +164,7 @@ class WhispersControllerTest {
                 ZonedDateTime.of(2023, 1, 10, 10, 30, 0, 0, ZoneId.of("Etc/UTC")),
                 "text"
         );
-        var createReplyData = new ReplyRequest(
+        var createReplyData = new UnsavedReply(
                 "text",
                 "sender",
                 UUID.fromString("530bbffb-455b-42e7-9759-23e508e89f03")

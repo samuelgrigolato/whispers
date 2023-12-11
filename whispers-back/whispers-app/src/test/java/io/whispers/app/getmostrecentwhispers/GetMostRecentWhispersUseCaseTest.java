@@ -1,8 +1,8 @@
 package io.whispers.app.getmostrecentwhispers;
 
-import io.whispers.domain.Reply;
-import io.whispers.domain.Whisper;
-import io.whispers.domain.WhisperRepository;
+import io.whispers.domain.model.Reply;
+import io.whispers.domain.model.Whisper;
+import io.whispers.domain.repository.WhisperRepository;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZoneId;
@@ -44,13 +44,13 @@ class GetMostRecentWhispersUseCaseTest {
         assertEquals(1, result.size());
         var whisperResult = result.iterator().next();
 
-        var expectedWhisperResult = new RecentWhisperView(
+        var expectedWhisperResult = new RecentWhisperOutput(
                 UUID.fromString("4fa16e90-04f7-47cc-8dec-26d36a95fbf4"),
                 "sender",
                 ZonedDateTime.of(2023, 1, 10, 10, 30, 0, 0, ZoneId.systemDefault()),
                 "text",
                 Optional.of("topic"),
-                List.of(new RecentReplyView(
+                List.of(new RecentReplyOutput(
                         "replySender",
                         ZonedDateTime.of(2023, 1, 10, 10, 31, 0, 0, ZoneId.systemDefault()),
                         "replyText"

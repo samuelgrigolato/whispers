@@ -5,7 +5,8 @@ import com.amazonaws.services.dynamodbv2.document.ItemUtils;
 import com.amazonaws.services.dynamodbv2.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.whispers.domain.*;
+import io.whispers.domain.model.*;
+import io.whispers.domain.repository.WhisperRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -117,7 +118,7 @@ public class DynamoWhisperRepository extends BaseDynamoRepository implements Whi
     }
 
     @Override
-    public Whisper create(WhisperCreationRequest data) {
+    public Whisper create(UnsavedWhisper data) {
         try {
             var whisperUuid = UUID.randomUUID();
             var formattedTimestamp = ZonedDateTime.now().format(ISO_INSTANT);
@@ -128,10 +129,10 @@ public class DynamoWhisperRepository extends BaseDynamoRepository implements Whi
                     .withString("gsi1Pk", "global" + (Math.abs(whisperUuid.hashCode()) % 10))
                     .withString("gsi1Sk", suffixedFormattedTimestamp)
                     .withString("gsi2Sk", suffixedFormattedTimestamp)
-                    .withString("gsi3Pk", data.sender())
+                    .withString("gsi3Pk", data.sender().username())
                     .withString("gsi3Sk", formattedTimestamp)
                     .withString("uuid", whisperUuid.toString())
-                    .withString("sender", data.sender())
+                    .withString("sender", data.sender().username())
                     .withString("text", data.text())
                     .withString("timestamp", formattedTimestamp)
                     .withString("replies", objectMapper.writeValueAsString(List.of()));
@@ -143,10 +144,9 @@ public class DynamoWhisperRepository extends BaseDynamoRepository implements Whi
     }
 
     @Override
-    public Reply createReply(ReplyRequest data) {
-        var whisperUuid = data.replyingTo();
+    public Reply createReply(UUID replyingTo, UnsavedReply data) {
         var whisperKey = ItemUtils.fromSimpleMap(Map.of(
-                "pk", "whisper#" + whisperUuid,
+                "pk", "whisper#" + replyingTo,
                 "sk", "entry"));
 
         var result = dynamoDB.getItem(new GetItemRequest()
@@ -188,10 +188,10 @@ public class DynamoWhisperRepository extends BaseDynamoRepository implements Whi
     private Whisper toWhisper(Item item, ObjectMapper objectMapper) {
         return new Whisper(
                 UUID.fromString(item.getString("uuid")),
-                item.getString("sender"),
+                new User(item.getString("sender")),
                 ZonedDateTime.parse(item.getString("timestamp")),
                 item.getString("text"),
-                Optional.ofNullable(item.getString("topic")),
+                Optional.ofNullable(item.getString("topic")).map(Topic::new),
                 parseReplies(item, objectMapper)
         );
     }

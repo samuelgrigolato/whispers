@@ -1,7 +1,7 @@
 package io.whispers.app.updatewhispertopic;
 
-import io.whispers.domain.TopicResolutionEvent;
-import io.whispers.domain.WhisperRepository;
+import io.whispers.domain.event.TopicResolvedEvent;
+import io.whispers.domain.repository.WhisperRepository;
 
 public class UpdateWhisperTopicUseCase {
 
@@ -12,7 +12,7 @@ public class UpdateWhisperTopicUseCase {
     }
 
     public void execute(UpdateWhisperTopicRequest request) {
-        TopicResolutionEvent event = request.event();
+        TopicResolvedEvent event = request.event();
         this.whisperRepository.updateTopic(event.whisperUuid(), event.topic());
     }
 

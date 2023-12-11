@@ -1,7 +1,8 @@
 package io.whispers.app.postwhisper;
 
+import io.whispers.domain.model.UnsavedWhisper;
+
 public record PostWhisperRequest(
-        String sender,
-        String text
+        UnsavedWhisper whisper
 ) {
 }

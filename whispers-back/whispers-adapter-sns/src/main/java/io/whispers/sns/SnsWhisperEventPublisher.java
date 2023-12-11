@@ -3,16 +3,14 @@ package io.whispers.sns;
 import com.amazonaws.services.sns.AmazonSNS;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.whispers.domain.WhisperCreatedEvent;
-import io.whispers.domain.WhisperEventPublisher;
+import io.whispers.domain.event.WhisperCreatedEvent;
+import io.whispers.domain.event.WhisperCreatedEventPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-
 @Component
-public class SnsWhisperEventPublisher implements WhisperEventPublisher {
+public class SnsWhisperEventPublisher implements WhisperCreatedEventPublisher {
 
     @Autowired
     private AmazonSNS amazonSns;

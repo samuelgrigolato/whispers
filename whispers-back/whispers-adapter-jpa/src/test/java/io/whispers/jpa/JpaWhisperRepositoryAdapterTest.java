@@ -1,8 +1,8 @@
 package io.whispers.jpa;
 
-import io.whispers.domain.ReplyRequest;
-import io.whispers.domain.WhisperCreationRequest;
-import io.whispers.domain.Whisper;
+import io.whispers.domain.model.UnsavedReply;
+import io.whispers.domain.model.UnsavedWhisper;
+import io.whispers.domain.model.Whisper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -66,7 +66,7 @@ class JpaWhisperRepositoryAdapterTest extends BaseJpaTest {
     @Test
     @Sql("JpaWhisperRepositoryAdapterTest_shouldCreate.sql")
     void shouldCreate() {
-        var result = this.jpaWhisperRepositoryAdapter.create(new WhisperCreationRequest(
+        var result = this.jpaWhisperRepositoryAdapter.create(new UnsavedWhisper(
                 "text",
                 "user"
         ));
@@ -79,7 +79,7 @@ class JpaWhisperRepositoryAdapterTest extends BaseJpaTest {
     @Test
     @Sql("JpaWhisperRepositoryAdapterTest_shouldCreateReply.sql")
     void shouldCreateReply() {
-        var result = this.jpaWhisperRepositoryAdapter.createReply(new ReplyRequest(
+        var result = this.jpaWhisperRepositoryAdapter.createReply(new UnsavedReply(
                 "text",
                 "user",
                 UUID.fromString("64050873-5b09-41f7-9d6d-41669917a3b9")
