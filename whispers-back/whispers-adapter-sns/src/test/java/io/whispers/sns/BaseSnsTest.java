@@ -29,7 +29,7 @@ import static org.testcontainers.containers.localstack.LocalStackContainer.Servi
 })
 class BaseSnsTest {
 
-    static LocalStackContainer localstack = new LocalStackContainer(DockerImageName.parse("localstack/localstack:0.11.3"))
+    static LocalStackContainer localstack = new LocalStackContainer(DockerImageName.parse("localstack/localstack:latest"))
             .withServices(SNS)
             .withEnv("DEFAULT_REGION", "us-east-1");
 

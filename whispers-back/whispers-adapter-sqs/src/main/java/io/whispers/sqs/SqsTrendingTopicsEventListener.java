@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class SqsTrendingTopicsEventListener {
@@ -24,9 +25,14 @@ public class SqsTrendingTopicsEventListener {
     @SqsListener(value = "${trending_topics.queue_name}")
     void onTrendingTopics(SnsNotification snsNotification) {
         try {
-            List<TrendingTopic> trendingTopics = this.objectMapper
-                    .readerForListOf(TrendingTopic.class)
+            List<SqsTrendingTopic> sqsTrendingTopics = this.objectMapper
+                    .readerForListOf(SqsTrendingTopic.class)
                     .readValue(snsNotification.message());
+            var trendingTopics = sqsTrendingTopics.stream()
+                    .map(sqsTrendingTopic -> new TrendingTopic(
+                            sqsTrendingTopic.title(),
+                            sqsTrendingTopic.whisperCount().longValue()))
+                    .collect(Collectors.toList());
             var useCase = new UpdateTrendingTopicsUseCase(this.topicRepository);
             useCase.execute(new UpdateTrendingTopicsRequest(trendingTopics));
         } catch (JsonProcessingException e) {
