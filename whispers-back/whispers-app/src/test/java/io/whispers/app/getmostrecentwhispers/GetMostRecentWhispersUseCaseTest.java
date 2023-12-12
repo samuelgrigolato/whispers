@@ -1,6 +1,8 @@
 package io.whispers.app.getmostrecentwhispers;
 
 import io.whispers.domain.model.Reply;
+import io.whispers.domain.model.Topic;
+import io.whispers.domain.model.User;
 import io.whispers.domain.model.Whisper;
 import io.whispers.domain.repository.WhisperRepository;
 import org.junit.jupiter.api.Test;
@@ -20,12 +22,12 @@ class GetMostRecentWhispersUseCaseTest {
      void testExecuteNotFiltering() {
         var whisper = new Whisper(
                 UUID.fromString("4fa16e90-04f7-47cc-8dec-26d36a95fbf4"),
-                "sender",
+                new User("sender"),
                 ZonedDateTime.of(2023, 1, 10, 10, 30, 0, 0, ZoneId.systemDefault()),
                 "text",
-                Optional.of("topic"),
+                Optional.of(new Topic("topic")),
                 List.of(new Reply(
-                        "replySender",
+                        new User("replySender"),
                         ZonedDateTime.of(2023, 1, 10, 10, 31, 0, 0, ZoneId.systemDefault()),
                         "replyText"
                 ))
@@ -38,7 +40,7 @@ class GetMostRecentWhispersUseCaseTest {
 
         var subject = new GetMostRecentWhispersUseCase(whisperRepositoryMock);
 
-        var response = subject.execute(new GetMostRecentWhispersRequest(Optional.empty()));
+        var response = subject.execute(new GetMostRecentWhispersRequest(new MostRecentFilterAll()));
         var result = response.whispers();
 
         assertEquals(1, result.size());
@@ -64,9 +66,9 @@ class GetMostRecentWhispersUseCaseTest {
         var whisperRepositoryMock = mock(WhisperRepository.class);
 
         var subject = new GetMostRecentWhispersUseCase(whisperRepositoryMock);
-        subject.execute(new GetMostRecentWhispersRequest(Optional.of(
+        subject.execute(new GetMostRecentWhispersRequest(
                 new MostRecentFilterBySender("sender")
-        )));
+        ));
 
         verify(whisperRepositoryMock).findMostRecentBySender("sender", 10);
     }
@@ -76,9 +78,9 @@ class GetMostRecentWhispersUseCaseTest {
         var whisperRepositoryMock = mock(WhisperRepository.class);
 
         var subject = new GetMostRecentWhispersUseCase(whisperRepositoryMock);
-        subject.execute(new GetMostRecentWhispersRequest(Optional.of(
+        subject.execute(new GetMostRecentWhispersRequest(
                 new MostRecentFilterByTopic("topic")
-        )));
+        ));
 
         verify(whisperRepositoryMock).findMostRecentByTopic("topic", 10);
     }

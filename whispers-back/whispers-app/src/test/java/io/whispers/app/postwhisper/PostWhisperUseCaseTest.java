@@ -2,6 +2,8 @@ package io.whispers.app.postwhisper;
 
 import io.whispers.domain.event.WhisperCreatedEvent;
 import io.whispers.domain.event.WhisperCreatedEventPublisher;
+import io.whispers.domain.model.Topic;
+import io.whispers.domain.model.User;
 import io.whispers.domain.model.Whisper;
 import io.whispers.domain.model.UnsavedWhisper;
 import io.whispers.domain.repository.WhisperRepository;
@@ -22,24 +24,24 @@ class PostWhisperUseCaseTest {
     void testExecute() {
         var whisper = new Whisper(
                 UUID.fromString("4fa16e90-04f7-47cc-8dec-26d36a95fbf4"),
-                "sender",
+                new User("sender"),
                 ZonedDateTime.of(2023, 1, 10, 10, 30, 0, 0, ZoneId.systemDefault()),
                 "text",
-                Optional.of("topic"),
+                Optional.of(new Topic("topic")),
                 Collections.emptyList()
         );
 
         var whisperRepositoryMock = mock(WhisperRepository.class);
-        when(whisperRepositoryMock.create(new UnsavedWhisper("text", "sender")))
+        when(whisperRepositoryMock.create(new UnsavedWhisper(new User("sender"), "text")))
                 .thenReturn(whisper);
 
-        var userRepositoryMock = mock(UserRepository.class);
         var whisperEventPublisherMock = mock(WhisperCreatedEventPublisher.class);
 
-        var subject = new PostWhisperUseCase(whisperRepositoryMock, userRepositoryMock, whisperEventPublisherMock);
+        var subject = new PostWhisperUseCase(whisperRepositoryMock, whisperEventPublisherMock);
 
-        var response = subject.execute(new PostWhisperRequest("sender", "text"));
-        verify(userRepositoryMock).createIfNotExists("sender");
+        var response = subject.execute(new PostWhisperRequest(
+                new UnsavedWhisper(new User("sender"), "text"))
+        );
         verify(whisperEventPublisherMock).publish(new WhisperCreatedEvent(
                 UUID.fromString("4fa16e90-04f7-47cc-8dec-26d36a95fbf4"),
                 "sender",

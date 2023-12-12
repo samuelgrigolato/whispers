@@ -17,10 +17,10 @@ class GetTrendingTopicsUseCaseTest {
         var topic = new TrendingTopic("topic", 10L);
         var trendingTopics = List.of(topic);
 
-        var topicRepositoryMock = mock(TrendingTopicRepository.class);
-        when(topicRepositoryMock.getTrending()).thenReturn(trendingTopics);
+        var trendingTopicRepositoryMock = mock(TrendingTopicRepository.class);
+        when(trendingTopicRepositoryMock.findAll()).thenReturn(trendingTopics);
 
-        var subject = new GetTrendingTopicsUseCase(topicRepositoryMock);
+        var subject = new GetTrendingTopicsUseCase(trendingTopicRepositoryMock);
 
         var response = subject.execute();
         var result = response.trendingTopics();

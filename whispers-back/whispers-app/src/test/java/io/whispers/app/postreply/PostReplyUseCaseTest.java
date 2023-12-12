@@ -2,6 +2,7 @@ package io.whispers.app.postreply;
 
 import io.whispers.domain.model.Reply;
 import io.whispers.domain.model.UnsavedReply;
+import io.whispers.domain.model.User;
 import io.whispers.domain.repository.WhisperRepository;
 import org.junit.jupiter.api.Test;
 
@@ -17,30 +18,28 @@ class PostReplyUseCaseTest {
     @Test
     void testExecute() {
         var reply = new Reply(
-                "sender",
+                new User("sender"),
                 ZonedDateTime.of(2023, 1, 10, 10, 30, 0, 0, ZoneId.systemDefault()),
                 "text"
         );
 
         var whisperRepositoryMock = mock(WhisperRepository.class);
         var createReplyData = new UnsavedReply(
-                "text",
-                "sender",
-                UUID.fromString("530bbffb-455b-42e7-9759-23e508e89f03")
+                new User("sender"),
+                "text"
         );
-        when(whisperRepositoryMock.createReply(createReplyData))
+        when(whisperRepositoryMock.createReply(UUID.fromString("530bbffb-455b-42e7-9759-23e508e89f03"), createReplyData))
                 .thenReturn(reply);
 
-        var userRepositoryMock = mock(UserRepository.class);
-
-        var subject = new PostReplyUseCase(whisperRepositoryMock, userRepositoryMock);
+        var subject = new PostReplyUseCase(whisperRepositoryMock);
 
         var response = subject.execute(new PostReplyRequest(
-                "sender",
-                "text",
+                new UnsavedReply(
+                    new User("sender"),
+                    "text"
+                ),
                 UUID.fromString("530bbffb-455b-42e7-9759-23e508e89f03")
         ));
-        verify(userRepositoryMock).createIfNotExists("sender");
 
         var expectedResponse = new PostReplyResponse(
                 "sender",

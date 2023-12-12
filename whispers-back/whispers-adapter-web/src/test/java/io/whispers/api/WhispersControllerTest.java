@@ -1,10 +1,7 @@
 package io.whispers.api;
 
 import io.whispers.domain.event.WhisperCreatedEventPublisher;
-import io.whispers.domain.model.Reply;
-import io.whispers.domain.model.UnsavedReply;
-import io.whispers.domain.model.Whisper;
-import io.whispers.domain.model.UnsavedWhisper;
+import io.whispers.domain.model.*;
 import io.whispers.domain.repository.WhisperRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +32,6 @@ class WhispersControllerTest {
     private WhisperRepository whisperRepository;
 
     @MockBean
-    private UserRepository userRepository;
-
-    @MockBean
     private WhisperCreatedEventPublisher whisperEventPublisher;
 
     @Test
@@ -63,12 +57,12 @@ class WhispersControllerTest {
     void shouldReturnLatestWhispers() throws Exception {
         var whisper = new Whisper(
                 UUID.fromString("51d0eaaa-0b61-44a9-9d63-cd672727b792"),
-                "sender",
+                new User("sender"),
                 ZonedDateTime.of(2023, 1, 10, 15, 30, 0, 0, ZoneId.of("Etc/UTC")),
                 "text",
-                Optional.of("topic"),
+                Optional.of(new Topic("topic")),
                 List.of(new Reply(
-                        "replySender",
+                        new User("replySender"),
                         ZonedDateTime.of(2023, 1, 10, 15, 31, 0, 0, ZoneId.of("Etc/UTC")),
                         "replyText"
                 ))
@@ -100,10 +94,10 @@ class WhispersControllerTest {
     void shouldReturnMyWhispers() throws Exception {
         var whisper = new Whisper(
                 UUID.fromString("51d0eaaa-0b61-44a9-9d63-cd672727b792"),
-                "sender",
+                new User("sender"),
                 ZonedDateTime.of(2023, 1, 10, 15, 30, 0, 0, ZoneId.of("Etc/UTC")),
                 "text",
-                Optional.of("topic"),
+                Optional.of(new Topic("topic")),
                 Collections.emptyList()
         );
         when(this.whisperRepository.findMostRecentBySender("sender", 10)).thenReturn(List.of(whisper));
@@ -128,13 +122,13 @@ class WhispersControllerTest {
     void shouldCreate() throws Exception {
         var whisper = new Whisper(
                 UUID.fromString("51d0eaaa-0b61-44a9-9d63-cd672727b792"),
-                "sender",
+                new User("sender"),
                 ZonedDateTime.of(2023, 1, 10, 15, 30, 0, 0, ZoneId.of("Etc/UTC")),
                 "text",
                 Optional.empty(),
                 Collections.emptyList()
         );
-        when(this.whisperRepository.create(new UnsavedWhisper("text", "sender")))
+        when(this.whisperRepository.create(new UnsavedWhisper(new User("sender"), "text")))
                 .thenReturn(whisper);
         this.mockMvc.perform(post("/whispers")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -160,16 +154,15 @@ class WhispersControllerTest {
     @Test
     void shouldCreateReply() throws Exception {
         var reply = new Reply(
-                "sender",
+                new User("sender"),
                 ZonedDateTime.of(2023, 1, 10, 10, 30, 0, 0, ZoneId.of("Etc/UTC")),
                 "text"
         );
         var createReplyData = new UnsavedReply(
-                "text",
-                "sender",
-                UUID.fromString("530bbffb-455b-42e7-9759-23e508e89f03")
+                new User("sender"),
+                "text"
         );
-        when(this.whisperRepository.createReply(createReplyData))
+        when(this.whisperRepository.createReply(UUID.fromString("530bbffb-455b-42e7-9759-23e508e89f03"), createReplyData))
                 .thenReturn(reply);
         this.mockMvc.perform(post("/whispers")
                         .contentType(MediaType.APPLICATION_JSON)

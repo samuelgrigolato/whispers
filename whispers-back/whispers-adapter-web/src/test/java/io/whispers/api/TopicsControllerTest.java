@@ -25,11 +25,11 @@ class TopicsControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private TrendingTopicRepository topicRepository;
+    private TrendingTopicRepository trendingTopicRepository;
 
     @Test
     void shouldReturnEmptyResponse() throws Exception {
-        when(this.topicRepository.getTrending())
+        when(this.trendingTopicRepository.findAll())
                 .thenReturn(Collections.emptyList());
         this.mockMvc.perform(get("/topics/trending"))
                 .andExpect(status().isOk())
@@ -40,7 +40,7 @@ class TopicsControllerTest {
     void shouldReturnTrendingTopics() throws Exception {
         var topic = new TrendingTopic("topic1", 10L);
         var topics = List.of(topic);
-        when(this.topicRepository.getTrending())
+        when(this.trendingTopicRepository.findAll())
                 .thenReturn(topics);
         this.mockMvc.perform(get("/topics/trending"))
                 .andExpect(status().isOk())
