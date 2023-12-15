@@ -19,15 +19,7 @@ public class SqsTopicResolvedEventListener {
     @Autowired
     private WhisperRepository whisperRepository;
 
-    @SqsListener(value = "${topic_resolved.queue_name}", maxConcurrentMessages = "500")
     void onTopicResolved(SnsNotification snsNotification) {
-        try {
-            var event = this.objectMapper.readValue(snsNotification.message(), TopicResolvedEvent.class);
-            var useCase = new UpdateWhisperTopicUseCase(this.whisperRepository);
-            useCase.execute(new UpdateWhisperTopicRequest(event));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Unable to parse message", e);
-        }
     }
 
 }
