@@ -1,6 +1,6 @@
 package io.whispers.api;
 
-import io.whispers.domain.event.WhisperCreatedEventPublisher;
+//import io.whispers.domain.event.WhisperCreatedEventPublisher;
 import io.whispers.domain.model.*;
 import io.whispers.domain.repository.WhisperRepository;
 import org.junit.jupiter.api.Test;
@@ -31,8 +31,8 @@ class WhispersControllerTest {
     @MockBean
     private WhisperRepository whisperRepository;
 
-    @MockBean
-    private WhisperCreatedEventPublisher whisperEventPublisher;
+//    @MockBean
+//    private WhisperCreatedEventPublisher whisperEventPublisher;
 
     @Test
     void shouldReturnEmptyResponse() throws Exception {

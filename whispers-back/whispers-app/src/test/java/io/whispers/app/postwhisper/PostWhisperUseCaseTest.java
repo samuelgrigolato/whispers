@@ -1,7 +1,5 @@
 package io.whispers.app.postwhisper;
 
-import io.whispers.domain.event.WhisperCreatedEvent;
-import io.whispers.domain.event.WhisperCreatedEventPublisher;
 import io.whispers.domain.model.Topic;
 import io.whispers.domain.model.User;
 import io.whispers.domain.model.Whisper;
@@ -35,19 +33,11 @@ class PostWhisperUseCaseTest {
         when(whisperRepositoryMock.create(new UnsavedWhisper(new User("sender"), "text")))
                 .thenReturn(whisper);
 
-        var whisperEventPublisherMock = mock(WhisperCreatedEventPublisher.class);
-
-        var subject = new PostWhisperUseCase(whisperRepositoryMock, whisperEventPublisherMock);
+        var subject = new PostWhisperUseCase(whisperRepositoryMock);
 
         var response = subject.execute(new PostWhisperRequest(
                 new UnsavedWhisper(new User("sender"), "text"))
         );
-        verify(whisperEventPublisherMock).publish(new WhisperCreatedEvent(
-                UUID.fromString("4fa16e90-04f7-47cc-8dec-26d36a95fbf4"),
-                "sender",
-                "text",
-                ZonedDateTime.of(2023, 1, 10, 10, 30, 0, 0, ZoneId.systemDefault())
-        ));
 
         var expectedResponse = new PostWhisperResponse(
                 UUID.fromString("4fa16e90-04f7-47cc-8dec-26d36a95fbf4"),
