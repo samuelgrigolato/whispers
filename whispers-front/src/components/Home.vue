@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { useRouter, useRoute } from 'vue-router';
 
+  const topicsEnabled = import.meta.env.VITE_TOPICS_ENABLED === 'true';
   const router = useRouter();
   const route = useRoute();
   const username = localStorage.getItem('username');
@@ -24,11 +25,13 @@
       routePath: '/my-whispers',
       title: 'My Whispers',
     },
-    {
+  ];
+  if (topicsEnabled) {
+    menuItems.push({
       routePath: '/trending',
       title: 'Trending',
-    },
-  ];
+    });
+  }
 </script>
 
 <template>

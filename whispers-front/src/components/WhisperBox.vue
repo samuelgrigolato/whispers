@@ -6,6 +6,7 @@
   const props = defineProps(['whisper']);
   defineEmits(['reply']);
 
+  const topicsEnabled = import.meta.env.VITE_TOPICS_ENABLED === 'true';
   const toggled = ref(false);
 
   const longTimestamp = (timestamp: string) =>
@@ -59,7 +60,7 @@
         <div class="flex justify-between">
           <span class="text-sm text-slate-600">/{{ whisper.sender }}</span>
           <router-link
-            v-if="whisper.topic"
+            v-if="whisper.topic && topicsEnabled"
             class="flex gap-2 items-center text-xs text-purple-900"
             :to="`/topics/${whisper.topic}`"
           >
