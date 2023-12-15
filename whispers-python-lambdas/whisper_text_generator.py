@@ -3,15 +3,15 @@ from faker import Faker
 
 
 TOPICS_DISTRIBUTION = [
-    ("topic1", 0.6),
-    ("topic2", 0.2),
-    ("topic3", 0.1),
-    ("topic4", 0.05),
-    ("topic5", 0.02),
-    ("topic6", 0.01),
-    ("topic7", 0.01),
-    ("topic8", 0.007),
-    ("topic9", 0.002),
+    ("news", 0.6),
+    ("music", 0.2),
+    ("sports", 0.1),
+    ("games", 0.05),
+    ("movies", 0.02),
+    ("pets", 0.01),
+    ("books", 0.01),
+    ("memes", 0.007),
+    ("travel", 0.002),
     ("", 0.001), # no topic
 ]
 _TOPIC_SAMPLER = []
