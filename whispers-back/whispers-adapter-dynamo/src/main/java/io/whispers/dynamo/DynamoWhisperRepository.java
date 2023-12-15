@@ -57,7 +57,9 @@ public class DynamoWhisperRepository extends BaseDynamoRepository implements Whi
 
     @Override
     public Collection<Whisper> findMostRecent(int limit) {
-        // debatable if we should be creating a new thread pool everytime
+        // debatable if we should be creating a new thread pool everytime,
+        // it would be more appropriate to have one shared thread pool, this is simpler
+        // and enough for the purposes of the workshop
         try (var executorService = Executors.newFixedThreadPool(GLOBAL_WHISPERS_SHARDS)) {
             var tasks = buildShardedGlobalMostRecentQueryTasks(limit);
             var futures = executorService.invokeAll(tasks);
