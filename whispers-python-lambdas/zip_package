@@ -2,7 +2,7 @@
 
 set -e
 
-rm lambda.zip
+rm -f lambda.zip
 pip install --target packages aws-psycopg2
 pip install --target packages amazon-dax-client
 pip install --target packages Faker
