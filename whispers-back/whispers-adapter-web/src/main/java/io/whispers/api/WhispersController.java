@@ -5,7 +5,6 @@ import io.whispers.app.postreply.PostReplyRequest;
 import io.whispers.app.postreply.PostReplyUseCase;
 import io.whispers.app.postwhisper.PostWhisperRequest;
 import io.whispers.app.postwhisper.PostWhisperUseCase;
-import io.whispers.domain.event.WhisperCreatedEventPublisher;
 import io.whispers.domain.model.UnsavedReply;
 import io.whispers.domain.model.UnsavedWhisper;
 import io.whispers.domain.model.User;
@@ -22,9 +21,6 @@ class WhispersController {
 
     @Autowired
     private WhisperRepository whisperRepository;
-
-    @Autowired
-    private WhisperCreatedEventPublisher whisperEventPublisher;
 
     @GetMapping(path = "")
     Collection<RecentWhisperOutput> get(@RequestParam("topic") Optional<String> topic) {
@@ -50,8 +46,7 @@ class WhispersController {
         String sender = authorization.substring("Bearer ".length());
         if (body.replyingTo().isEmpty()) {
             PostWhisperUseCase useCase = new PostWhisperUseCase(
-                    this.whisperRepository,
-                    this.whisperEventPublisher);
+                    this.whisperRepository);
             return useCase.execute(new PostWhisperRequest(new UnsavedWhisper(
                     new User(sender),
                     body.text()
