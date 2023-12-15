@@ -22,22 +22,6 @@ public class ResolveTopicsUseCase {
     }
 
     public void execute(Collection<WhisperCreatedEvent> events) {
-        var topicIncrements = new HashMap<String, Integer>();
-        var resolutionEvents = new ArrayList<TopicResolvedEvent>();
-        for (var event : events) {
-            var maybeTopic = this.topicResolver.resolveTopic(event.text());
-            if (maybeTopic.isPresent()) {
-                var topic = maybeTopic.get();
-                resolutionEvents.add(new TopicResolvedEvent(event.uuid(), topic));
-                topicIncrements.put(topic, topicIncrements.getOrDefault(topic, 0) + 1);
-            }
-        }
-        if (!resolutionEvents.isEmpty()) {
-            this.topicResolvedEventPublisher.publishBatch(resolutionEvents);
-        }
-        if (!topicIncrements.isEmpty()) {
-            this.topicRepository.incrementWhisperCounts(topicIncrements);
-        }
     }
 
 }
