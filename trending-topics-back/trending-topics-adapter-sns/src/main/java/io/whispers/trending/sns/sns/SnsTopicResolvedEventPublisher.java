@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.whispers.trending.domain.event.TopicResolvedEvent;
 import io.whispers.trending.domain.event.TopicResolvedEventPublisher;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,20 @@ public class SnsTopicResolvedEventPublisher implements TopicResolvedEventPublish
     }
 
     public void publishBatch(Collection<TopicResolvedEvent> events) {
+        var batch = new ArrayList<TopicResolvedEvent>();
+        for (var event : events) {
+            batch.add(event);
+            if (batch.size() == 10) {
+                publishSingleBatch(batch);
+                batch.clear();
+            }
+        }
+        if (!batch.isEmpty()) {
+            publishSingleBatch(batch);
+        }
+    }
+
+    private void publishSingleBatch(Collection<TopicResolvedEvent> events) {
         amazonSns.publishBatch(new PublishBatchRequest()
                 .withTopicArn(topicResolvedTopicArn)
                 .withPublishBatchRequestEntries(toBatchEntries(events)));
