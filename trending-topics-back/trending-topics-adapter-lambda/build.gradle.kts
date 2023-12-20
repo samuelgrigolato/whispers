@@ -15,6 +15,7 @@ dependencies {
     api("com.amazonaws:aws-lambda-java-core:1.2.3")
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.mockito:mockito-core:5.+")
 }
 
 tasks.test {
