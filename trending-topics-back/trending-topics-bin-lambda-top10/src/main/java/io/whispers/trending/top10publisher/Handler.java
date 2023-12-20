@@ -11,7 +11,7 @@ import io.whispers.trending.app.publishtop10.PublishTop10UseCase;
 import io.whispers.trending.domain.TrendingTopicRepository;
 import io.whispers.trending.domain.event.TrendingTopicsEventPublisher;
 import io.whispers.trending.redis.RedisTopicRepository;
-import io.whispers.trending.sns.sns.SnsTrendingTopicsEventPublisher;
+import io.whispers.trending.sns.SnsTrendingTopicsEventPublisher;
 import io.whispers.trending.top10publisherlambda.Top10PublisherLambda;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;

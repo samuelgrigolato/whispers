@@ -15,7 +15,7 @@ import io.whispers.trending.domain.TopicResolver;
 import io.whispers.trending.domain.event.TopicResolvedEventPublisher;
 import io.whispers.trending.redis.RedisTopicRepository;
 import io.whispers.trending.simpleresolver.SimpleTopicResolver;
-import io.whispers.trending.sns.sns.SnsTopicResolvedEventPublisher;
+import io.whispers.trending.sns.SnsTopicResolvedEventPublisher;
 import io.whispers.trending.whispercreatedlambda.WhisperCreatedLambda;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;

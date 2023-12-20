@@ -1,4 +1,4 @@
-package io.whispers.trending.sns.sns;
+package io.whispers.trending.sns;
 
 import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.model.PublishBatchRequest;
