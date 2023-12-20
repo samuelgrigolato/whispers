@@ -1,6 +1,5 @@
-package io.whispers.trending;
+package io.whispers.trending.app.resolvetopics;
 
-import io.whispers.trending.app.resolvetopics.ResolveTopicsUseCase;
 import io.whispers.trending.domain.*;
 import io.whispers.trending.domain.event.TopicResolvedEvent;
 import io.whispers.trending.domain.event.TopicResolvedEventPublisher;
