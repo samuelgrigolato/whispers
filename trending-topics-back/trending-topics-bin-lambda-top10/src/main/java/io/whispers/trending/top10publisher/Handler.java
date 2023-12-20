@@ -19,6 +19,8 @@ import org.redisson.codec.JsonJacksonCodec;
 import org.redisson.config.Config;
 
 import java.io.IOException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Properties;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
@@ -39,7 +41,11 @@ public class Handler {
         this.objectMapper = objectMapper;
 
         this.redisson = buildRedissonClient();
-        this.topicRepository = new RedisTopicRepository(redisson);
+        this.topicRepository = new RedisTopicRepository(
+                redisson,
+                () -> ZonedDateTime.now(ZoneId.of("Etc/UTC")),
+                (buckets) -> (int)(Math.random() * buckets)
+        );
 
         var trendingTopicsTopicArn = this.configuration.getProperty("trending_topics.topic_arn");
         var amazonSns = buildAmazonSnsClient(trendingTopicsTopicArn);

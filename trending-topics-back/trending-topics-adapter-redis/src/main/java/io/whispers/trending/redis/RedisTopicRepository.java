@@ -5,10 +5,11 @@ import io.whispers.trending.domain.TrendingTopic;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static java.util.Map.Entry.comparingByValue;
@@ -17,16 +18,22 @@ public class RedisTopicRepository implements TrendingTopicRepository {
     private static final int BUCKETS = 100;
     private static final int MINUTES = 3;
 
-    private RedissonClient redisson;
+    private final Supplier<ZonedDateTime> nowSupplier;
+    private final Function<Integer, Integer> randomIntegerSupplier;
+    private final RedissonClient redisson;
 
-    public RedisTopicRepository(RedissonClient redisson) {
+    public RedisTopicRepository(RedissonClient redisson,
+                                Supplier<ZonedDateTime> nowSupplier,
+                                Function<Integer, Integer> randomIntegerSupplier) {
         this.redisson = redisson;
+        this.nowSupplier = nowSupplier;
+        this.randomIntegerSupplier = randomIntegerSupplier;
     }
 
     @Override
     public void incrementWhisperCounts(Map<String, Integer> topicIncrements) {
-        String minuteMapKey = getMinuteMapKey(ZonedDateTime.now(ZoneId.of("Etc/UTC")));
-        var bucket = (int)(Math.random() * BUCKETS);
+        String minuteMapKey = getMinuteMapKey(this.nowSupplier.get());
+        var bucket = this.randomIntegerSupplier.apply(BUCKETS);
         RLock lock = this.redisson.getLock("topicsLock-" + bucket);
         try {
             lock.lockInterruptibly(5, TimeUnit.SECONDS);
@@ -82,9 +89,9 @@ public class RedisTopicRepository implements TrendingTopicRepository {
                 .collect(Collectors.toList());
     }
 
-    private static Set<String> getLastMinutesMapKeys() {
+    private Set<String> getLastMinutesMapKeys() {
         var result = new HashSet<String>();
-        var dateTime = ZonedDateTime.now(ZoneId.of("Etc/UTC"));
+        var dateTime = this.nowSupplier.get();
         for (var i = 0; i < MINUTES; i++) {
             var key = getMinuteMapKey(dateTime);
             result.add(key);
