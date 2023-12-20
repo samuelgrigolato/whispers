@@ -7,7 +7,6 @@ import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.AmazonSNSClientBuilder;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -42,11 +41,6 @@ class BaseSnsTest {
     @AfterAll
     static void afterAll() {
         localstack.stop();
-    }
-
-    @BeforeEach
-    void beforeEach() {
-        amazonSNS.createTopic("whisper-created");
     }
 
 }
